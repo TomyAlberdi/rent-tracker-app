@@ -1,6 +1,5 @@
 package rent.tracker.backend.Entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -31,10 +30,7 @@ public class Property {
     
     @ManyToOne
     @JoinColumn(name = "group_id")
-    private PropertyGroup group;
-    
-    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MonthlyRecord> monthlyRecords;
+    private Group group;
     
     public enum PropertyType {
         INDIVIDUAL,
