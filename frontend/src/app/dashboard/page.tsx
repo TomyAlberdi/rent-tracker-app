@@ -21,7 +21,7 @@ export default function Page() {
             />
           </div>
         </header>
-        <div className="h-[calc(100svh - 5rem)] overflow-x-hidden px-4">
+        <div className="page-full-h overflow-x-hidden px-4 custom-sidebar">
           <Outlet />
         </div>
       </SidebarInset>
