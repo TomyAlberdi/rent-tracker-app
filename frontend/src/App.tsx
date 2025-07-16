@@ -1,5 +1,11 @@
+import CustomRouter from "@/lib/routes";
+
 function App() {
-  return <div>test</div>;
+  return (
+    <div>
+      <CustomRouter />
+    </div>
+  );
 }
 
 export default App;
