@@ -1,149 +1,89 @@
+import { NavGroup } from "@/components/nav-group";
+import { NavIndividual } from "@/components/nav-individual";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  BookOpen,
-  Bot,
-  CircleDollarSign,
-  Frame,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
-  Settings2,
-  SquareTerminal
-} from "lucide-react";
+import type { GroupListingItem, IdNameItem } from "@/lib/interfaces";
+import { CircleDollarSign, CirclePlus } from "lucide-react";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+const individual_properties: IdNameItem[] = [
+  {
+    id: 1,
+    name: "El Talar",
   },
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-};
+  {
+    id: 2,
+    name: "Amondarain",
+  },
+];
+
+const groups: GroupListingItem[] = [
+  {
+    id: 1,
+    name: "Magdalena",
+    description: "Una propiedad de la zona de Magdalena",
+    properties: [
+      {
+        id: 3,
+        name: "Dto. A",
+        description: null,
+        type: "GROUPED",
+        groupId: 1,
+      },
+      {
+        id: 4,
+        name: "Dto. B",
+        description: null,
+        type: "GROUPED",
+        groupId: 1,
+      },
+      {
+        id: 5,
+        name: "Dto. C",
+        description: null,
+        type: "GROUPED",
+        groupId: 1,
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Edificio 51",
+    description: "Una propiedad de La Plata",
+    properties: [
+      {
+        id: 6,
+        name: "Dto. A",
+        description: null,
+        type: "GROUPED",
+        groupId: 2,
+      },
+      {
+        id: 7,
+        name: "Dto. B",
+        description: null,
+        type: "GROUPED",
+        groupId: 2,
+      },
+      {
+        id: 8,
+        name: "Dto. C",
+        description: null,
+        type: "GROUPED",
+        groupId: 2,
+      },
+    ],
+  }
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -165,8 +105,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="custom-sidebar">
+        <NavGroup items={groups} />
+        <NavIndividual items={individual_properties} />
       </SidebarContent>
+      <SidebarFooter>
+        <Button>
+          <CirclePlus />
+          Agregar Propiedad
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

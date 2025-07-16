@@ -118,3 +118,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar for Sidebar */
+body {
+  --sb-track-color: #020618;
+  --sb-thumb-color: #e2e8f0;
+  --sb-size: 7px;
+}
+.custom-sidebar::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+.custom-sidebar::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 3px;
+}
+.custom-sidebar::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 3px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .custom-sidebar {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
