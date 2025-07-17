@@ -15,5 +15,5 @@ export interface GroupListingItem {
   id: number;
   name: string;
   description: string | null;
-  properties: PropertyDTO[];
+  properties?: PropertyDTO[];
 }

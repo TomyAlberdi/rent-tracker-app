@@ -1,6 +1,7 @@
+import AddProperty from "@/components/AddProperty";
+import CreateGroup from "@/components/CreateGroup";
 import { NavGroup } from "@/components/nav-group";
 import { NavIndividual } from "@/components/nav-individual";
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import type { GroupListingItem, IdNameItem } from "@/lib/interfaces";
-import { CircleDollarSign, CirclePlus } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
@@ -82,7 +83,7 @@ const groups: GroupListingItem[] = [
         groupId: 2,
       },
     ],
-  }
+  },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -110,10 +111,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavIndividual items={individual_properties} />
       </SidebarContent>
       <SidebarFooter>
-        <Button>
-          <CirclePlus />
-          Agregar Propiedad
-        </Button>
+        <AddProperty />
+        <CreateGroup />
       </SidebarFooter>
     </Sidebar>
   );
