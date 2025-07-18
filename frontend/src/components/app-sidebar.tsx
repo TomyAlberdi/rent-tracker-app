@@ -29,13 +29,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   useEffect(() => {
     getFullGroups().then((data) => setGroups(data));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [GroupCreated]);
-
-  useEffect(() => {
     getIndividualProperties().then((data) => setProperties(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [PropertyCreated]);
+  }, [GroupCreated, PropertyCreated]);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -61,7 +57,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavIndividual items={properties} />
       </SidebarContent>
       <SidebarFooter>
-        <AddProperty />
+        <AddProperty
+          PropertyCreated={PropertyCreated}
+          setPropertyCreated={setPropertyCreated}
+        />
         <CreateGroup
           GroupCreated={GroupCreated}
           setGroupCreated={setGroupCreated}

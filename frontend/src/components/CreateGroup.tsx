@@ -49,6 +49,7 @@ const CreateGroup = ({ GroupCreated, setGroupCreated }: CreateGroupProps) => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     createGroup(values.name, values.description).finally(() => {
+      form.reset();
       setLoading(false);
       setGroupCreated(!GroupCreated);
       setDialogOpen(false);

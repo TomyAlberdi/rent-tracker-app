@@ -23,12 +23,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGroupContext } from "@/context/useGroupContext";
+import { usePropertyContext } from "@/context/usePropertyContext";
 import type { IdNameItem } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+
+interface AddPropertyProps {
+  PropertyCreated: boolean;
+  setPropertyCreated: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
@@ -37,9 +43,15 @@ const formSchema = z.object({
   groupId: z.string().optional().nullable(),
 });
 
-const AddProperty = () => {
+const AddProperty = ({
+  PropertyCreated,
+  setPropertyCreated,
+}: AddPropertyProps) => {
   const { getDropdownGroups } = useGroupContext();
+  const { createProperty } = usePropertyContext();
   const [DropdownGroups, setDropdownGroups] = useState<IdNameItem[]>([]);
+  const [Loading, setLoading] = useState(false);
+  const [DialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     getDropdownGroups().then((data) => setDropdownGroups(data));
@@ -58,11 +70,22 @@ const AddProperty = () => {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    //TODO: Format group ID to number
+    setLoading(true);
+    createProperty(
+      values.name,
+      values.type,
+      values.description,
+      values.groupId ? Number(values.groupId) : null
+    ).finally(() => {
+      form.reset();
+      setLoading(false);
+      setPropertyCreated(!PropertyCreated);
+      setDialogOpen(false);
+    });
   };
 
   return (
-    <Dialog>
+    <Dialog open={DialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button>
           <CirclePlus />
@@ -136,7 +159,7 @@ const AddProperty = () => {
                   </FormItem>
                 )}
               />
-              <Button>
+              <Button disabled={Loading}>
                 <CirclePlus />
                 Crear
               </Button>
