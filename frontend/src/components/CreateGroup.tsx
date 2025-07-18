@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'El nombre es obligatorio'),
   description: z.string().optional(),
 })
 
