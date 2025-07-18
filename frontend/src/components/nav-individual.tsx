@@ -14,7 +14,7 @@ export function NavIndividual({ items }: { items: IdNameItem[] }) {
       <SidebarGroupLabel>Otras Propiedades</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem>
+          <SidebarMenuItem key={item.id}>
             <SidebarMenuButton asChild tooltip={item.name}>
               <Link to="/">
                 <span>{item.name}</span>
