@@ -12,7 +12,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useGroupContext } from "@/context/useGroupContext";
-import type { GroupListingItem } from "@/lib/interfaces";
+import { usePropertyContext } from "@/context/usePropertyContext";
+import type { GroupListingItem, IdNameItem } from "@/lib/interfaces";
 import { CircleDollarSign } from "lucide-react";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -20,13 +21,21 @@ import { Link } from "react-router-dom";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { getFullGroups } = useGroupContext();
+  const { getIndividualProperties } = usePropertyContext();
   const [groups, setGroups] = useState<GroupListingItem[]>([]);
+  const [properties, setProperties] = useState<IdNameItem[]>([]);
   const [GroupCreated, setGroupCreated] = useState(false);
+  const [PropertyCreated, setPropertyCreated] = useState(false);
 
   useEffect(() => {
     getFullGroups().then((data) => setGroups(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [GroupCreated]);
+
+  useEffect(() => {
+    getIndividualProperties().then((data) => setProperties(data));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PropertyCreated]);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -49,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="custom-sidebar">
         <NavGroup items={groups} />
-        <NavIndividual items={individual_properties} />
+        <NavIndividual items={properties} />
       </SidebarContent>
       <SidebarFooter>
         <AddProperty />
