@@ -7,34 +7,59 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useGroupContext } from "@/context/useGroupContext";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  name: z.string().min(1, 'El nombre es obligatorio'),
-  description: z.string().optional(),
-})
+interface CreateGroupProps {
+  ProductCreated: boolean;
+  setProductCreated: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const CreateGroup = () => {
+const formSchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio"),
+  description: z.string().optional(),
+});
+
+const CreateGroup = ({
+  ProductCreated,
+  setProductCreated,
+}: CreateGroupProps) => {
+  const { createGroup } = useGroupContext();
+  const [DialogOpen, setDialogOpen] = useState(false);
+  const [Loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
     },
-  })
+  });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
-  }
+    setLoading(true);
+    createGroup(values.name, values.description).finally(() => {
+      setLoading(false);
+      setProductCreated(!ProductCreated);
+      setDialogOpen(false);
+    });
+  };
 
   return (
-    <Dialog>
+    <Dialog open={DialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button>
           <CirclePlus />
@@ -50,15 +75,16 @@ const CreateGroup = () => {
         </DialogHeader>
         <div>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+            >
               <FormField
                 control={form.control}
                 name="name"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Nombre
-                    </FormLabel>
+                    <FormLabel>Nombre</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -66,14 +92,12 @@ const CreateGroup = () => {
                   </FormItem>
                 )}
               />
-              <FormField 
+              <FormField
                 control={form.control}
                 name="description"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Descripción
-                    </FormLabel>
+                    <FormLabel>Descripción</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -81,7 +105,7 @@ const CreateGroup = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit">
+              <Button type="submit" disabled={Loading}>
                 <CirclePlus />
                 Crear
               </Button>

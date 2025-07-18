@@ -65,7 +65,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     }
   };
 
-  const createGroup = async (name: string, description: string) => {
+  const createGroup = async (name: string, description?: string) => {
     try {
       const response = await fetch(`${BASE_URL}`, {
         method: "POST",

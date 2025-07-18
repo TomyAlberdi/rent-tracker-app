@@ -15,7 +15,7 @@ import { useGroupContext } from "@/context/useGroupContext";
 import type { GroupListingItem, IdNameItem } from "@/lib/interfaces";
 import { CircleDollarSign } from "lucide-react";
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const individual_properties: IdNameItem[] = [
@@ -31,12 +31,13 @@ const individual_properties: IdNameItem[] = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { getFullGroups } = useGroupContext();
-  const [groups, setGroups] = React.useState<GroupListingItem[]>([]);
+  const [groups, setGroups] = useState<GroupListingItem[]>([]);
+  const [ProductCreated, setProductCreated] = useState(false);
 
   useEffect(() => {
     getFullGroups().then((data) => setGroups(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ProductCreated]);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -63,7 +64,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <AddProperty />
-        <CreateGroup />
+        <CreateGroup
+          ProductCreated={ProductCreated}
+          setProductCreated={setProductCreated}
+        />
       </SidebarFooter>
     </Sidebar>
   );
