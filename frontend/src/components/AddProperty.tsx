@@ -22,25 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useGroupContext } from "@/context/useGroupContext";
+import type { IdNameItem } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
-const groups = [
-  {
-    id: 1,
-    name: "Grupo 1",
-  },
-  {
-    id: 2,
-    name: "Grupo 2",
-  },
-  {
-    id: 3,
-    name: "Grupo 3",
-  },
-];
 
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
@@ -50,6 +38,14 @@ const formSchema = z.object({
 });
 
 const AddProperty = () => {
+  const { getDropdownGroups } = useGroupContext();
+  const [DropdownGroups, setDropdownGroups] = useState<IdNameItem[]>([]);
+
+  useEffect(() => {
+    getDropdownGroups().then((data) => setDropdownGroups(data));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -118,6 +114,7 @@ const AddProperty = () => {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={undefined}
+                      disabled={DropdownGroups.length === 0}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -125,8 +122,11 @@ const AddProperty = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {groups.map((group) => (
-                          <SelectItem key={group.id} value={group.id.toString()}>
+                        {DropdownGroups.map((group) => (
+                          <SelectItem
+                            key={group.id}
+                            value={group.id.toString()}
+                          >
                             {group.name}
                           </SelectItem>
                         ))}
