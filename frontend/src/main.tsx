@@ -1,5 +1,6 @@
 import App from "@/App.tsx";
 import GroupContextComponent from "@/context/GroupContextComponent";
+import PropertyContextComponent from "@/context/PropertyContextComponent";
 import "@/index.css";
 import { ThemeProvider } from "@/theme/theme-provider";
 import { StrictMode } from "react";
@@ -10,9 +11,11 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <GroupContextComponent>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <PropertyContextComponent>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </PropertyContextComponent>
       </GroupContextComponent>
     </ThemeProvider>
   </StrictMode>
