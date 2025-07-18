@@ -24,8 +24,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 interface CreateGroupProps {
-  ProductCreated: boolean;
-  setProductCreated: React.Dispatch<React.SetStateAction<boolean>>;
+  GroupCreated: boolean;
+  setGroupCreated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const formSchema = z.object({
@@ -33,10 +33,7 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-const CreateGroup = ({
-  ProductCreated,
-  setProductCreated,
-}: CreateGroupProps) => {
+const CreateGroup = ({ GroupCreated, setGroupCreated }: CreateGroupProps) => {
   const { createGroup } = useGroupContext();
   const [DialogOpen, setDialogOpen] = useState(false);
   const [Loading, setLoading] = useState(false);
@@ -53,7 +50,7 @@ const CreateGroup = ({
     setLoading(true);
     createGroup(values.name, values.description).finally(() => {
       setLoading(false);
-      setProductCreated(!ProductCreated);
+      setGroupCreated(!GroupCreated);
       setDialogOpen(false);
     });
   };
