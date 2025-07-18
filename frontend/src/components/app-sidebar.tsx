@@ -11,9 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useGroupContext } from "@/context/useGroupContext";
 import type { GroupListingItem, IdNameItem } from "@/lib/interfaces";
 import { CircleDollarSign } from "lucide-react";
 import * as React from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const individual_properties: IdNameItem[] = [
@@ -27,66 +29,15 @@ const individual_properties: IdNameItem[] = [
   },
 ];
 
-const groups: GroupListingItem[] = [
-  {
-    id: 1,
-    name: "Magdalena",
-    description: "Una propiedad de la zona de Magdalena",
-    properties: [
-      {
-        id: 3,
-        name: "Dto. A",
-        description: null,
-        type: "GROUPED",
-        groupId: 1,
-      },
-      {
-        id: 4,
-        name: "Dto. B",
-        description: null,
-        type: "GROUPED",
-        groupId: 1,
-      },
-      {
-        id: 5,
-        name: "Dto. C",
-        description: null,
-        type: "GROUPED",
-        groupId: 1,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Edificio 51",
-    description: "Una propiedad de La Plata",
-    properties: [
-      {
-        id: 6,
-        name: "Dto. A",
-        description: null,
-        type: "GROUPED",
-        groupId: 2,
-      },
-      {
-        id: 7,
-        name: "Dto. B",
-        description: null,
-        type: "GROUPED",
-        groupId: 2,
-      },
-      {
-        id: 8,
-        name: "Dto. C",
-        description: null,
-        type: "GROUPED",
-        groupId: 2,
-      },
-    ],
-  },
-];
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { getFullGroups } = useGroupContext();
+  const [groups, setGroups] = React.useState<GroupListingItem[]>([]);
+
+  useEffect(() => {
+    getFullGroups().then((data) => setGroups(data));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
