@@ -73,7 +73,7 @@ const AddProperty = () => {
           Agregar Propiedad
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Agregar Propiedad</DialogTitle>
         </DialogHeader>

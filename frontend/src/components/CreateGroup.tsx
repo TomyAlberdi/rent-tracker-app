@@ -41,7 +41,7 @@ const CreateGroup = () => {
           Crear Grupo
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Crear Grupo</DialogTitle>
           <DialogDescription>
