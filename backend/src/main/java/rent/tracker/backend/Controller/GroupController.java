@@ -9,7 +9,6 @@ import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Service.GroupService;
 
 @RestController
-@RestControllerAdvice
 @RequestMapping("/group")
 @RequiredArgsConstructor
 public class GroupController {
@@ -29,12 +28,8 @@ public class GroupController {
     
     @GetMapping("/{id}")
     public ResponseEntity<?> getGroupById(@PathVariable Long id) {
-        try {
-            GroupDTO groupDTO = groupService.getGroupById(id);
-            return ResponseEntity.ok(groupDTO);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        GroupDTO groupDTO = groupService.getGroupById(id);
+        return ResponseEntity.ok(groupDTO);
     }
     
     @PostMapping
@@ -47,22 +42,14 @@ public class GroupController {
             @PathVariable Long id,
             @RequestBody CreateGroupDTO dto
     ) {
-        try {
-            GroupDTO group = groupService.updateGroup(id, dto);
-            return ResponseEntity.ok(group);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        GroupDTO group = groupService.updateGroup(id, dto);
+        return ResponseEntity.ok(group);
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteGroup(@PathVariable Long id) {
-        try {
-            groupService.deleteGroup(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        groupService.deleteGroup(id);
+        return ResponseEntity.ok().build();
     }
     
 }
