@@ -1,3 +1,4 @@
+import GroupMonthlyTable from "@/components/GroupMonthlyTable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,15 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupContext } from "@/context/useGroupContext";
 import { type GroupDTO } from "@/lib/interfaces";
-import { AlertCircleIcon, Building2, GroupIcon, PencilLine, Trash2 } from "lucide-react";
+import {
+  AlertCircleIcon,
+  Building2,
+  ChevronsLeft,
+  ChevronsRight,
+  GroupIcon,
+  PencilLine,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -19,6 +28,7 @@ const Group = () => {
   const { getGroup } = useGroupContext();
   const [GroupData, setGroupData] = useState<GroupDTO | null>(null);
   const [Loading, setLoading] = useState(false);
+  const [RecordDataYear, setRecordDataYear] = useState(2025);
 
   useEffect(() => {
     setLoading(true);
@@ -32,10 +42,18 @@ const Group = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  const handlePreviousYear = () => {
+    setRecordDataYear(RecordDataYear - 1);
+  };
+
+  const handleNextYear = () => {
+    setRecordDataYear(RecordDataYear + 1);
+  };
+
   if (Loading)
     return (
       <div className="page-full-h flex justify-start items-center gap-4 pb-4">
-        <div className="h-full w-1/3 flex flex-col gap-4">
+        <div className="h-full w-1/4 flex flex-col gap-4">
           <Skeleton className="h-1/2 w-full" />
           <Skeleton className="h-1/2 w-full" />
         </div>
@@ -56,15 +74,19 @@ const Group = () => {
 
   return (
     <div className="page-full-h flex justify-start items-center gap-4 pb-4">
-      <div className="h-full w-1/3 flex flex-col gap-4">
+      <div className="h-full w-1/4 flex flex-col gap-4">
         <Card>
-          <h2 className="alternate-font text-md font-medium flex gap-2"><GroupIcon size={25} /> Grupo</h2>
+          <h2 className="alternate-font text-md font-medium flex gap-2">
+            <GroupIcon size={25} /> Grupo
+          </h2>
           <CardHeader>
             <CardTitle className="text-2xl">{GroupData.name}</CardTitle>
             <CardDescription>{GroupData.description}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <h3 className="alternate-font text-md font-medium flex gap-2"><Building2 size={22} /> Propiedades Incluidas</h3>
+            <h3 className="alternate-font text-md font-medium flex gap-2">
+              <Building2 size={22} /> Propiedades Incluidas
+            </h3>
             <ul className="flex flex-col gap-2">
               {GroupData.properties?.map((property) => (
                 <li key={property.id} className="text-sm">
@@ -91,6 +113,18 @@ const Group = () => {
             </Button>
           </CardContent>
         </Card>
+      </div>
+      <div className="h-full w-3/4 flex flex-col border border-red-500">
+        <div className="w-full flex justify-center items-center gap-10 py-2">
+          <Button onClick={handlePreviousYear}>
+            <ChevronsLeft />
+          </Button>
+          <span className="text-2xl font-bold">{RecordDataYear}</span>
+          <Button onClick={handleNextYear}>
+            <ChevronsRight />
+          </Button>
+        </div>
+        <GroupMonthlyTable group={GroupData} year={RecordDataYear} />
       </div>
     </div>
   );
