@@ -30,7 +30,7 @@ export function NavGroup({ items }: { items: GroupListingItem[] }) {
           <Collapsible key={item.id} asChild defaultOpen={true}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.name}>
-                <Link to="/">
+                <Link to={`/group/${item.id}`}>
                   <span>{item.name}</span>
                 </Link>
               </SidebarMenuButton>
