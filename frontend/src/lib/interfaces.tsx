@@ -23,3 +23,15 @@ export interface GroupListingItem {
   name: string;
   properties?: IdNameItem[];
 }
+
+export interface RecordDTO {
+  id: number;
+  propertyId: number;
+  propertyName: string;
+  groupId: number | null;
+  groupName: string | null;
+  month: number;
+  year: number;
+  income: number;
+  netIncome: number;
+}
