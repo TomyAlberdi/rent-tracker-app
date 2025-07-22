@@ -39,7 +39,6 @@ interface AddPropertyProps {
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
   description: z.string().optional(),
-  type: z.enum(["GROUPED", "INDIVIDUAL"]),
   groupId: z.string().optional().nullable(),
 });
 
@@ -63,7 +62,6 @@ const AddProperty = ({
     defaultValues: {
       name: "",
       description: "",
-      type: "INDIVIDUAL",
       groupId: null,
     },
   });
@@ -73,7 +71,7 @@ const AddProperty = ({
     setLoading(true);
     createProperty(
       values.name,
-      values.type,
+      values.groupId ? "GROUPED" : "INDIVIDUAL",
       values.description,
       values.groupId ? Number(values.groupId) : null
     ).finally(() => {
