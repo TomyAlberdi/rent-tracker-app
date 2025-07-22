@@ -1,4 +1,4 @@
-import GroupMonthlyTable from "@/components/GroupMonthlyTable";
+import GroupMonthlyChart from "@/components/GroupMonthlyChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,7 +83,7 @@ const Group = () => {
             <CardTitle className="text-2xl">{GroupData.name}</CardTitle>
             <CardDescription>{GroupData.description}</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-2">
+          <CardContent className="flex flex-col gap-2 pt-4">
             <h3 className="alternate-font text-md font-medium flex gap-2">
               <Building2 size={22} /> Propiedades Incluidas
             </h3>
@@ -124,7 +124,7 @@ const Group = () => {
             <ChevronsRight />
           </Button>
         </div>
-        <GroupMonthlyTable group={GroupData} year={RecordDataYear} />
+        <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
       </div>
     </div>
   );
