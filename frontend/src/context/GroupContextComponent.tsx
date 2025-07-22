@@ -29,7 +29,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     }
   };
 
-  const getFullGroups = async () => {
+  const getGroupsWithProperties = async () => {
     try {
       const url = `${BASE_URL}/list/full`;
       const res = await fetch(url);
@@ -104,7 +104,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const exportData: GroupContextType = {
     getDropdownGroups,
-    getFullGroups,
+    getGroupsWithProperties,
     getGroup,
     createGroup,
     deleteGroup,
