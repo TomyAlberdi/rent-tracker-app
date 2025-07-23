@@ -1,5 +1,5 @@
 import NotFound from "@/app/Pages/Error/NotFound";
-import Group from "@/app/Pages/Home/Group";
+import Group from "@/app/Pages/Group/Group";
 import Home from "@/app/Pages/Home/Home";
 
 export const routesConfig = [

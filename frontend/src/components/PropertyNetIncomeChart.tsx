@@ -32,12 +32,10 @@ const PropertyNetIncomeChart = ({
   propertyName,
   records,
 }: PropertyNetIncomeChartProps) => {
-  // Fill missing months with empty records
   const filledRecords = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1;
     const found = records.find((r) => r.month === month);
     if (found) return found;
-    // Use propertyId and groupId/groupName from the first record if available
     const base = records[0] || {};
     return {
       id: `empty-${month}`,
@@ -66,6 +64,7 @@ const PropertyNetIncomeChart = ({
           <ChartContainer config={chartConfig}>
             <BarChart accessibilityLayer data={recordsWithMonthName}>
               <CartesianGrid vertical={false} />
+              {/*FIXME: Stylize tooltip (flex col) */}
               <ChartTooltip
                 cursor={true}
                 content={<ChartTooltipContent hideLabel hideIndicator />}
@@ -77,6 +76,8 @@ const PropertyNetIncomeChart = ({
                   fillOpacity={1}
                 />
                 {recordsWithMonthName.map((item) => (
+                  //TODO: Add dialog open on cell click to update record
+                  //TODO: If empty, open create record dialog
                   <Cell
                     key={item.id}
                     fill={
