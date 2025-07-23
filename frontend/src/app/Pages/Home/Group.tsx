@@ -16,6 +16,7 @@ import {
   Building2,
   ChevronsLeft,
   ChevronsRight,
+  CirclePlus,
   GroupIcon,
   PencilLine,
   Trash2,
@@ -105,6 +106,10 @@ const Group = () => {
             </h2>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
+            <Button className="w-full" disabled>
+              <CirclePlus />
+              Crear Registro
+            </Button>
             <Button variant={"secondary"} className="w-full" disabled>
               <PencilLine />
               Editar
@@ -115,9 +120,7 @@ const Group = () => {
             </Button>
           </CardContent>
         </Card>
-      </div>
-      <div className="h-full w-3/4 flex flex-col border border-red-500">
-        <div className="w-full flex justify-center items-center gap-10 py-2">
+        <Card className="flex flex-row justify-between">
           <Button onClick={handlePreviousYear}>
             <ChevronsLeft />
           </Button>
@@ -125,7 +128,9 @@ const Group = () => {
           <Button onClick={handleNextYear}>
             <ChevronsRight />
           </Button>
-        </div>
+        </Card>
+      </div>
+      <div className="h-full w-3/4 flex flex-col">
         <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
       </div>
     </div>
