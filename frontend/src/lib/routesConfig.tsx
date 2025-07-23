@@ -1,4 +1,5 @@
 import NotFound from "@/app/Pages/Error/NotFound";
+import Group from "@/app/Pages/Group/Group";
 import Home from "@/app/Pages/Home/Home";
 
 export const routesConfig = [
@@ -10,4 +11,10 @@ export const routesConfig = [
     index: true,
     element: <Home />,
   },
+  {
+    path: "/group/:id",
+    element: <Group />,
+  },
+  //TODO: Create Property page (Possibly adapt property net income chart component)
+  //TODO: Create Record page (Show extended expenses and net income)
 ];

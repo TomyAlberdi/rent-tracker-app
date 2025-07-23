@@ -10,7 +10,6 @@ import rent.tracker.backend.Repository.PropertyRepository;
 import rent.tracker.backend.Service.PropertyService;
 
 @RestController
-@RestControllerAdvice
 @RequestMapping("/property")
 @RequiredArgsConstructor
 public class PropertyController {
@@ -25,12 +24,8 @@ public class PropertyController {
     
     @GetMapping("/{id}")
     public ResponseEntity<?> getIndividualProperty(@PathVariable Long id) {
-        try {
-            PropertyDTO property = propertyService.getPropertyById(id);
-            return ResponseEntity.ok(property);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        PropertyDTO property = propertyService.getPropertyById(id);
+        return ResponseEntity.ok(property);
     }
     
     @PostMapping
@@ -43,22 +38,14 @@ public class PropertyController {
             @PathVariable Long id,
             @RequestBody CreatePropertyDTO dto
     ) {
-        try {
-            PropertyDTO property = propertyService.updateProperty(id, dto);
-            return ResponseEntity.ok(property);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        PropertyDTO property = propertyService.updateProperty(id, dto);
+        return ResponseEntity.ok(property);
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProperty(@PathVariable Long id) {
-        try {
-            propertyService.deleteProperty(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        propertyService.deleteProperty(id);
+        return ResponseEntity.ok().build();
     }
     
 }

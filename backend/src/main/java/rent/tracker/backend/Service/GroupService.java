@@ -6,13 +6,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rent.tracker.backend.DTO.CreateGroupDTO;
 import rent.tracker.backend.DTO.GroupDTO;
+import rent.tracker.backend.DTO.LightGroupWithPropertiesDTO;
 import rent.tracker.backend.Entity.Group;
 import rent.tracker.backend.Entity.Property;
 import rent.tracker.backend.Mapper.GroupMapper;
 import rent.tracker.backend.Mapper.PropertyMapper;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
+import rent.tracker.backend.View.GroupDropdownView;
+import rent.tracker.backend.View.IndividualPropertiesView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +27,20 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final PropertyRepository propertyRepository;
     
-    public List<GroupDTO> getAllGroupsWithProperties() {
-        return groupRepository.findAll().stream()
-                .map(GroupMapper::toDTO)
-                .collect(Collectors.toList());
+    public List<LightGroupWithPropertiesDTO> getAllGroupsWithProperties() {
+        List<LightGroupWithPropertiesDTO> returnGroups = new ArrayList<>();
+        List<GroupDropdownView> groups = groupRepository.findAllBy();
+        groups.forEach(
+                group -> {
+                    List<IndividualPropertiesView> properties = propertyRepository.findLightByGroupId(group.getId());
+                    LightGroupWithPropertiesDTO lightGroupWithPropertiesDTO = new LightGroupWithPropertiesDTO();
+                    lightGroupWithPropertiesDTO.setId(group.getId());
+                    lightGroupWithPropertiesDTO.setName(group.getName());
+                    lightGroupWithPropertiesDTO.setProperties(properties);
+                    returnGroups.add(lightGroupWithPropertiesDTO);
+                }
+        );
+        return returnGroups;
     }
     
     public GroupDTO createGroup(CreateGroupDTO dto) {

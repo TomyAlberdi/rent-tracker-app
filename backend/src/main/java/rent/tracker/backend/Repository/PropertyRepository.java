@@ -11,4 +11,5 @@ import java.util.List;
 public interface PropertyRepository extends JpaRepository<Property, Long> {
     List<Property> findByGroupId(Long groupId);
     List<IndividualPropertiesView> findByTypeAndGroupIsNull(Property.PropertyType type);
+    List<IndividualPropertiesView> findLightByGroupId(Long groupId);
 }

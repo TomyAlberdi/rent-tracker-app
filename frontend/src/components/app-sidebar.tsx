@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { getFullGroups } = useGroupContext();
+  const { getGroupsWithProperties } = useGroupContext();
   const { getIndividualProperties } = usePropertyContext();
   const [groups, setGroups] = useState<GroupListingItem[]>([]);
   const [properties, setProperties] = useState<IdNameItem[]>([]);
@@ -28,7 +28,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [PropertyCreated, setPropertyCreated] = useState(false);
 
   useEffect(() => {
-    getFullGroups().then((data) => setGroups(data));
+    getGroupsWithProperties().then((data) => setGroups(data));
     getIndividualProperties().then((data) => setProperties(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [GroupCreated, PropertyCreated]);
