@@ -16,10 +16,9 @@ import {
   Building2,
   ChevronsLeft,
   ChevronsRight,
-  CirclePlus,
   GroupIcon,
   PencilLine,
-  Trash2,
+  Trash2
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -106,17 +105,14 @@ const Group = () => {
             </h2>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Button className="w-full" disabled>
-              <CirclePlus />
-              Crear Registro
-            </Button>
+            {/* TODO: Create and Abstract edit group button & dialog */}  
             <Button variant={"secondary"} className="w-full" disabled>
               <PencilLine />
-              Editar
+              Editar Grupo
             </Button>
             <Button variant={"destructive"} className="w-full" disabled>
               <Trash2 />
-              Eliminar
+              Eliminar Grupo
             </Button>
           </CardContent>
         </Card>

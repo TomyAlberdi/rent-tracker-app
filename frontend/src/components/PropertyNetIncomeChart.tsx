@@ -51,7 +51,7 @@ const PropertyNetIncomeChart = ({
       month,
       year,
       income: 0,
-      expenses: 1200,
+      expenses: 0,
       netIncome: 0,
     };
   });
@@ -77,6 +77,7 @@ const PropertyNetIncomeChart = ({
                 axisLine={false}
               />
               <ChartTooltip content={<ChartTooltipContent />} />
+              {/* TODO: Navigate to record page on month click */}
               <Bar dataKey={"income"} fill={"#00bc7d"} radius={4} />
               <Bar dataKey={"expenses"} fill={"#ff2056"} radius={4} />
             </BarChart>
