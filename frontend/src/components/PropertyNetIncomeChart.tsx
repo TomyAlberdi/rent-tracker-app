@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/chart";
 import type { RecordDTO } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
-import { Bar, BarChart, CartesianGrid, Cell, LabelList } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 interface PropertyNetIncomeChartProps {
   year: number;
@@ -22,8 +22,13 @@ interface PropertyNetIncomeChartProps {
 }
 
 const chartConfig = {
-  netIncome: {
-    label: "Ingreso Neto",
+  income: {
+    label: "Ingresos",
+    color: "#00bc7d",
+  },
+  expenses: {
+    label: "Gastos",
+    color: "#ff2056",
   },
 } satisfies ChartConfig;
 
@@ -46,6 +51,7 @@ const PropertyNetIncomeChart = ({
       month,
       year,
       income: 0,
+      expenses: 1200,
       netIncome: 0,
     };
   });
@@ -64,32 +70,15 @@ const PropertyNetIncomeChart = ({
           <ChartContainer config={chartConfig}>
             <BarChart accessibilityLayer data={recordsWithMonthName}>
               <CartesianGrid vertical={false} />
-              {/*FIXME: Stylize tooltip (flex col) */}
-              <ChartTooltip
-                cursor={true}
-                content={<ChartTooltipContent hideLabel hideIndicator />}
+              <XAxis
+                dataKey={"monthName"}
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
               />
-              <Bar dataKey={"netIncome"} className="cursor-pointer">
-                <LabelList
-                  position={"top"}
-                  dataKey={"monthName"}
-                  fillOpacity={1}
-                />
-                {recordsWithMonthName.map((item) => (
-                  //TODO: Add dialog open on cell click to update record
-                  //TODO: If empty, open create record dialog
-                  <Cell
-                    key={item.id}
-                    fill={
-                      item.netIncome === 0
-                        ? "#e2e8f0"
-                        : item.netIncome > 0
-                        ? "#00bc7d"
-                        : "#ff2056"
-                    }
-                  />
-                ))}
-              </Bar>
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey={"income"} fill={"#00bc7d"} radius={4} />
+              <Bar dataKey={"expenses"} fill={"#ff2056"} radius={4} />
             </BarChart>
           </ChartContainer>
         </CardContent>
