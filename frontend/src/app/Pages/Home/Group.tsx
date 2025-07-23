@@ -81,9 +81,11 @@ const Group = () => {
           </h2>
           <CardHeader>
             <CardTitle className="text-2xl">{GroupData.name}</CardTitle>
-            <CardDescription>{GroupData.description}</CardDescription>
+            {GroupData.description && (
+              <CardDescription>{GroupData.description}</CardDescription>
+            )}
           </CardHeader>
-          <CardContent className="flex flex-col gap-2 pt-4">
+          <CardContent className="flex flex-col gap-2">
             <h3 className="alternate-font text-md font-medium flex gap-2">
               <Building2 size={22} /> Propiedades Incluidas
             </h3>
