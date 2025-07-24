@@ -16,5 +16,4 @@ export const routesConfig = [
     element: <Group />,
   },
   //TODO: Create Property page (Possibly adapt property net income chart component)
-  //TODO: Create Record page (Show extended expenses and net income)
 ];
