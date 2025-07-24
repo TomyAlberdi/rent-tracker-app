@@ -25,6 +25,7 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 interface PropertyNetIncomeChartProps {
   year: number;
+  propertyId: number;
   propertyName: string;
   records: RecordDTO[];
 }
@@ -42,6 +43,7 @@ const chartConfig = {
 
 const PropertyNetIncomeChart = ({
   year,
+  propertyId,
   propertyName,
   records,
 }: PropertyNetIncomeChartProps) => {
@@ -55,7 +57,7 @@ const PropertyNetIncomeChart = ({
     const base = records[0] || {};
     return {
       id: typeof base.id === "number" ? base.id : month,
-      propertyId: base.propertyId || 0,
+      propertyId: propertyId,
       propertyName: propertyName,
       groupId: base.groupId || null,
       groupName: base.groupName || null,

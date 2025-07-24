@@ -46,6 +46,7 @@ const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
           key={property.id}
           year={year}
           propertyName={property.name}
+          propertyId={property.id}
           records={recordsByProperty[property.id] || []}
         />
       ))}
