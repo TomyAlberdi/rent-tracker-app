@@ -86,6 +86,31 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     }
   };
 
+  const updateGroup = async (
+    groupId: number,
+    name: string,
+    description?: string
+  ) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${groupId}`, {
+        method: "PUT",
+        body: JSON.stringify({ name, description }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        toast.error("Ocurrió un error al actualizar el grupo");
+        console.warn("Failed to update group:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to update group", err);
+      toast.error("Ocurrió un error al actualizar el grupo");
+    }
+  };
+
   const deleteGroup = async (groupId: string) => {
     try {
       const response = await fetch(`${BASE_URL}/${groupId}`, {
@@ -107,6 +132,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     getGroupsWithProperties,
     getGroup,
     createGroup,
+    updateGroup,
     deleteGroup,
   };
 

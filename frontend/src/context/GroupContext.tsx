@@ -6,6 +6,7 @@ export interface GroupContextType {
   getGroupsWithProperties: () => Promise<GroupListingItem[]>;
   getGroup: (groupId: string) => Promise<GroupDTO | null>;
   createGroup: (name: string, description?: string) => Promise<void>;
+  updateGroup: (groupId: number, name: string, description?: string) => Promise<void>;
   deleteGroup: (groupId: string) => Promise<void>;
 }
 

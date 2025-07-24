@@ -1,3 +1,4 @@
+import GroupAdministration from "@/app/Pages/Group/GroupAdministration";
 import GroupMonthlyChart from "@/components/GroupMonthlyChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -16,9 +17,7 @@ import {
   Building2,
   ChevronsLeft,
   ChevronsRight,
-  GroupIcon,
-  PencilLine,
-  Trash2
+  GroupIcon
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -27,6 +26,7 @@ const Group = () => {
   const { id } = useParams();
   const { getGroup } = useGroupContext();
   const [GroupData, setGroupData] = useState<GroupDTO | null>(null);
+  const [GroupUpdated, setGroupUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
 
@@ -40,7 +40,7 @@ const Group = () => {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, GroupUpdated]);
 
   const handlePreviousYear = () => {
     setRecordDataYear(RecordDataYear - 1);
@@ -104,17 +104,11 @@ const Group = () => {
               Administración
             </h2>
           </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            {/* TODO: Create and Abstract edit group button & dialog */}  
-            <Button variant={"secondary"} className="w-full" disabled>
-              <PencilLine />
-              Editar Grupo
-            </Button>
-            <Button variant={"destructive"} className="w-full" disabled>
-              <Trash2 />
-              Eliminar Grupo
-            </Button>
-          </CardContent>
+          <GroupAdministration
+            Group={GroupData}
+            GroupUpdated={GroupUpdated}
+            setGroupUpdated={setGroupUpdated}
+          />
         </Card>
         <Card className="flex flex-row justify-between">
           <Button onClick={handlePreviousYear}>
