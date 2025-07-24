@@ -1,9 +1,9 @@
+import PropertyAdministration from "@/app/Pages/Property/PropertyAdministration";
 import PropertyNetIncomeChart from "@/components/PropertyNetIncomeChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -17,8 +17,6 @@ import {
   Building2,
   ChevronsLeft,
   ChevronsRight,
-  PencilLine,
-  Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -30,6 +28,7 @@ const Property = () => {
 
   const [PropertyData, setPropertyData] = useState<PropertyDTO | null>(null);
   const [PropertyRecords, setPropertyRecords] = useState<RecordDTO[]>([]);
+  const [PropertyUpdated, setPropertyUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
 
@@ -43,7 +42,7 @@ const Property = () => {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, PropertyUpdated]);
 
   useEffect(() => {
     const fetchPropertyRecords = async () => {
@@ -106,17 +105,11 @@ const Property = () => {
               Administración
             </h2>
           </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            {/* TODO: Create and Abstract edit property button & dialog */}
-            <Button variant={"secondary"} className="w-full" disabled>
-              <PencilLine />
-              Editar Propiedad
-            </Button>
-            <Button variant={"destructive"} className="w-full" disabled>
-              <Trash2 />
-              Eliminar Propiedad
-            </Button>
-          </CardContent>
+          <PropertyAdministration
+            Property={PropertyData}
+            PropertyUpdated={PropertyUpdated}
+            setPropertyUpdated={setPropertyUpdated}
+          />
         </Card>
         <Card className="flex flex-row justify-between">
           <Button onClick={handlePreviousYear}>

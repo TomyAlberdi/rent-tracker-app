@@ -74,6 +74,33 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
     }
   };
 
+  const updateProperty = async (
+    id: number,
+    name: string,
+    type: string,
+    description?: string,
+    groupId?: number | null
+  ) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ name, type, description, groupId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        toast.error("Ocurrió un error al actualizar la propiedad");
+        console.warn("Failed to update property:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to update property", err);
+      toast.error("Ocurrió un error al actualizar la propiedad");
+    }
+  };
+
   const deleteProperty = async (id: number) => {
     try {
       const response = await fetch(`${BASE_URL}/${id}`, {
@@ -94,6 +121,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
     getIndividualProperties,
     getPropertyById,
     createProperty,
+    updateProperty,
     deleteProperty,
   };
 

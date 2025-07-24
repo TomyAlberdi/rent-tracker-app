@@ -24,16 +24,17 @@ import {
 } from "@/components/ui/select";
 import { useGroupContext } from "@/context/useGroupContext";
 import { usePropertyContext } from "@/context/usePropertyContext";
-import type { IdNameItem } from "@/lib/interfaces";
+import type { IdNameItem, PropertyDTO } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, PencilLine } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
 interface AddPropertyProps {
-  PropertyCreated: boolean;
-  setPropertyCreated: React.Dispatch<React.SetStateAction<boolean>>;
+  PropertyCreated?: boolean;
+  setPropertyCreated?: React.Dispatch<React.SetStateAction<boolean>>;
+  DefaultProperty?: PropertyDTO;
 }
 
 const formSchema = z.object({
@@ -45,9 +46,10 @@ const formSchema = z.object({
 const AddProperty = ({
   PropertyCreated,
   setPropertyCreated,
+  DefaultProperty,
 }: AddPropertyProps) => {
   const { getDropdownGroups } = useGroupContext();
-  const { createProperty } = usePropertyContext();
+  const { createProperty, updateProperty } = usePropertyContext();
   const [DropdownGroups, setDropdownGroups] = useState<IdNameItem[]>([]);
   const [Loading, setLoading] = useState(false);
   const [DialogOpen, setDialogOpen] = useState(false);
@@ -60,39 +62,65 @@ const AddProperty = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      groupId: null,
+      name: DefaultProperty?.name || "",
+      description: DefaultProperty?.description || "",
+      groupId: DefaultProperty?.groupId?.toString() || "none",
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
     setLoading(true);
-    createProperty(
-      values.name,
-      values.groupId ? "GROUPED" : "INDIVIDUAL",
-      values.description,
-      values.groupId ? Number(values.groupId) : null
-    ).finally(() => {
-      form.reset();
-      setLoading(false);
-      setPropertyCreated(!PropertyCreated);
-      setDialogOpen(false);
-    });
+    if (DefaultProperty) {
+      updateProperty(
+        DefaultProperty.id,
+        values.name,
+        values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
+        values.description,
+        values.groupId !== "none" ? Number(values.groupId) : null
+      ).finally(() => {
+        form.reset();
+        setLoading(false);
+        window.location.reload();
+        setDialogOpen(false);
+      });
+    } else {
+      createProperty(
+        values.name,
+        values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
+        values.description,
+        values.groupId !== "none" ? Number(values.groupId) : null
+      ).finally(() => {
+        form.reset();
+        setLoading(false);
+        if (setPropertyCreated) {
+          setPropertyCreated(!PropertyCreated);
+        }
+        setDialogOpen(false);
+      });
+    }
   };
 
   return (
     <Dialog open={DialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <CirclePlus />
-          Agregar Propiedad
-        </Button>
+        {DefaultProperty ? (
+          <Button variant={"secondary"} className="w-full">
+            <PencilLine />
+            Editar Propiedad
+          </Button>
+        ) : (
+          <Button>
+            <CirclePlus />
+            Crear Propiedad
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>Agregar Propiedad</DialogTitle>
+          <DialogTitle>
+            {DefaultProperty ? "Editar" : "Crear"} Propiedad
+          </DialogTitle>
         </DialogHeader>
         <div>
           <Form {...form}>
@@ -134,7 +162,9 @@ const AddProperty = ({
                     <FormLabel>Grupo</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={undefined}
+                      defaultValue={
+                        DefaultProperty?.groupId?.toString() || "none"
+                      }
                       disabled={DropdownGroups.length === 0}
                     >
                       <FormControl>
@@ -143,6 +173,9 @@ const AddProperty = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem key="none" value="none">
+                          Sin grupo
+                        </SelectItem>
                         {DropdownGroups.map((group) => (
                           <SelectItem
                             key={group.id}
@@ -158,8 +191,17 @@ const AddProperty = ({
                 )}
               />
               <Button disabled={Loading}>
-                <CirclePlus />
-                Crear
+                {DefaultProperty ? (
+                  <>
+                    <PencilLine />
+                    Editar
+                  </>
+                ) : (
+                  <>
+                    <CirclePlus />
+                    Crear
+                  </>
+                )}
               </Button>
             </form>
           </Form>

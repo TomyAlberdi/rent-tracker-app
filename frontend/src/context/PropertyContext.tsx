@@ -10,6 +10,13 @@ export interface PropertyContextType {
     description?: string,
     groupId?: number | null
   ) => Promise<void>;
+  updateProperty: (
+    id: number,
+    name: string,
+    type: string,
+    description?: string,
+    groupId?: number | null
+  ) => Promise<void>;
   deleteProperty: (id: number) => Promise<void>;
 }
 
