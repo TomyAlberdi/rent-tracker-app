@@ -8,6 +8,9 @@ interface GroupMonthlyTableProps {
   year: number;
 }
 
+//TODO: change multiple group property record charts to a single group chart of combined record values by month
+// Differentiate between each property record values by color
+// Use new backend endpoints
 const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
   const { getRecords } = useRecordContext();
 

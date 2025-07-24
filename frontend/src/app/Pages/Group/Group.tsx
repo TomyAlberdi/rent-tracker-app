@@ -17,10 +17,10 @@ import {
   Building2,
   ChevronsLeft,
   ChevronsRight,
-  GroupIcon
+  GroupIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Group = () => {
   const { id } = useParams();
@@ -89,13 +89,13 @@ const Group = () => {
             <h3 className="alternate-font text-md font-medium flex gap-2">
               <Building2 size={22} /> Propiedades Incluidas
             </h3>
-            <ul className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               {GroupData.properties?.map((property) => (
-                <li key={property.id} className="text-sm">
-                  • {property.name}
-                </li>
+                <Button key={property.id} variant={"outline"} className="text-sm" asChild>
+                  <Link to={`/property/${property.id}`}>{property.name}</Link>
+                </Button>
               ))}
-            </ul>
+            </div>
           </CardContent>
         </Card>
         <Card>
