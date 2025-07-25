@@ -47,13 +47,13 @@ public class MonthlyRecordService {
     }
     
     @Transactional
-    public MonthlyRecord update(MonthlyRecord updatedRecord) {
-        MonthlyRecord existing = monthlyRecordRepository.findById(updatedRecord.getId())
-                .orElseThrow(() -> new EntityNotFoundException("MonthlyRecord not found with ID: " + updatedRecord.getId()));
-        existing.setMonth(updatedRecord.getMonth());
-        existing.setYear(updatedRecord.getYear());
-        existing.setIncome(updatedRecord.getIncome());
-        existing.setNetIncome(calculateNetIncome(updatedRecord));
+    public MonthlyRecord update(Long id, CreateRecordDTO record) {
+        MonthlyRecord existing = monthlyRecordRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("MonthlyRecord not found with ID: " + id));
+        existing.setMonth(record.getMonth());
+        existing.setYear(record.getYear());
+        existing.setIncome(record.getIncome());
+        existing.setNetIncome(calculateNetIncome(existing));
         return monthlyRecordRepository.save(existing);
     }
     

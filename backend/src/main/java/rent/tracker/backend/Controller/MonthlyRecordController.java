@@ -39,9 +39,9 @@ public class MonthlyRecordController {
         return ResponseEntity.ok(recordDTO);
     }
     
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody MonthlyRecord record) {
-        MonthlyRecord monthlyRecord = monthlyRecordService.update(record);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody CreateRecordDTO record) {
+        MonthlyRecord monthlyRecord = monthlyRecordService.update(id, record);
         RecordDTO recordDTO = MonthlyRecordMapper.toDTO(monthlyRecord);
         return ResponseEntity.ok(recordDTO);
     }
