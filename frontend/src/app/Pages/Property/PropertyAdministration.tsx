@@ -33,9 +33,6 @@ const PropertyAdministration = ({
   const handleDelete = async () => {
     setLoadingDelete(true);
     deleteProperty(Property.id)
-      .then(() => {
-        setPropertyUpdated(!PropertyUpdated);
-      })
       .finally(() => {
         setLoadingDelete(false);
         navigate("/");

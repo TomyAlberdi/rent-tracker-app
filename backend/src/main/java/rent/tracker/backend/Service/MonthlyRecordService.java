@@ -41,6 +41,8 @@ public class MonthlyRecordService {
         newRecord.setYear(record.getYear());
         newRecord.setIncome(record.getIncome());
         newRecord.setNetIncome(calculateNetIncome(newRecord));
+        property.getMonthlyRecords().add(newRecord);
+        propertyRepository.save(property);
         return monthlyRecordRepository.save(newRecord);
     }
     

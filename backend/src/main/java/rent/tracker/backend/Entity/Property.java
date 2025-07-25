@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -31,6 +32,9 @@ public class Property {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+    
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MonthlyRecord> monthlyRecords = new ArrayList<>();
     
     public enum PropertyType {
         INDIVIDUAL,
