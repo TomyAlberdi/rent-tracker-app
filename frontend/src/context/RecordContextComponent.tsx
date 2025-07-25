@@ -26,12 +26,65 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
     }
   };
 
+  const createRecord = async (
+    propertyId: number,
+    month: number,
+    year: number,
+    income: number
+  ) => {
+    try {
+      const response = await fetch(`${BASE_URL}`, {
+        method: "POST",
+        body: JSON.stringify({ propertyId, month, year, income }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to create record:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to create record", err);
+    }
+  };
+
+  const updateRecord = async (
+    id: number,
+    propertyId: number,
+    month: number,
+    year: number,
+    income: number
+  ) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ propertyId, month, year, income }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to update record:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to update record", err);
+    }
+  };
+
   const exportData: RecordContextType = {
     getRecords,
+    createRecord,
+    updateRecord,
   };
 
   return (
-    <RecordContext.Provider value={exportData}>{children}</RecordContext.Provider>
+    <RecordContext.Provider value={exportData}>
+      {children}
+    </RecordContext.Provider>
   );
 };
 

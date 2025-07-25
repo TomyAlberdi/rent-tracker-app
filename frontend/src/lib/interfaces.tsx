@@ -25,7 +25,7 @@ export interface GroupListingItem {
 }
 
 export interface RecordDTO {
-  id: number;
+  id?: number;
   propertyId: number;
   propertyName: string;
   groupId: number | null;

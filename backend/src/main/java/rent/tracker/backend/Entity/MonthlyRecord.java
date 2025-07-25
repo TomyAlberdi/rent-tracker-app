@@ -41,4 +41,6 @@ public class MonthlyRecord {
     
     @NotNull
     private Double netIncome;
+    
+    //TODO: design, create and add expenses to monthly record
 }

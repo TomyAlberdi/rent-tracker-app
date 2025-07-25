@@ -36,15 +36,12 @@ public class MonthlyRecordService {
         if (exists) {
             throw new IllegalStateException("A record already exists for this property, month, and year.");
         }
-        // 3. Create and populate new record
         MonthlyRecord newRecord = new MonthlyRecord();
         newRecord.setProperty(property);
         newRecord.setMonth(record.getMonth());
         newRecord.setYear(record.getYear());
         newRecord.setIncome(record.getIncome());
         newRecord.setNetIncome(calculateNetIncome(newRecord));
-        
-        // 4. Persist new record
         return monthlyRecordRepository.save(newRecord);
     }
 

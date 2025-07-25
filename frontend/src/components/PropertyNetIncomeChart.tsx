@@ -1,4 +1,5 @@
 import AddRecord from "@/components/AddRecord";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -56,7 +57,6 @@ const PropertyNetIncomeChart = ({
     if (found) return found;
     const base = records[0] || {};
     return {
-      id: typeof base.id === "number" ? base.id : month,
       propertyId: propertyId,
       propertyName: propertyName,
       groupId: base.groupId || null,
@@ -134,16 +134,22 @@ const PropertyNetIncomeChart = ({
         </CardHeader>
       </Card>
       <Drawer open={DrawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent className="flex flex-col justify-center items-center pb-4">
-          <DrawerHeader>
-            <DrawerTitle>{selectedRecord?.monthName}</DrawerTitle>
+        <DrawerContent
+          aria-describedby={undefined}
+          className="flex flex-col justify-center items-center pb-4"
+        >
+          <DrawerHeader className="flex items-center">
+            <DrawerTitle className="alternate-font text-xl w-2/3 py-4">
+              Registro de ingresos para la propiedad <br />
+              <Button
+                className="w-full mt-4 cursor-default"
+                variant={"outline"}
+              >
+                {propertyName}
+              </Button>
+            </DrawerTitle>
           </DrawerHeader>
-          <AddRecord
-            propertyId={selectedRecord?.propertyId || 0}
-            month={selectedRecord?.month || 0}
-            year={selectedRecord?.year || 0}
-            income={selectedRecord?.netIncome || 0}
-          />
+          {selectedRecord && <AddRecord record={selectedRecord} />}
         </DrawerContent>
       </Drawer>
     </>
