@@ -28,23 +28,26 @@ public class MonthlyRecordService {
     @Transactional
     public MonthlyRecord create(CreateRecordDTO record) {
         Property property = propertyRepository.findById(record.getPropertyId())
-                .orElseThrow(() -> new EntityNotFoundException("Property not found with ID: " + record.getPropertyId()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Property not found with ID: " + record.getPropertyId()));
         boolean exists = monthlyRecordRepository
-                .findByPropertyAndMonthAndYear(property, record.getMonth(), record.getYear())
+                .findByPropertyIdAndMonthAndYear(record.getPropertyId(), record.getMonth(), record.getYear())
                 .isPresent();
         if (exists) {
             throw new IllegalStateException("A record already exists for this property, month, and year.");
         }
+        // 3. Create and populate new record
         MonthlyRecord newRecord = new MonthlyRecord();
         newRecord.setProperty(property);
         newRecord.setMonth(record.getMonth());
         newRecord.setYear(record.getYear());
         newRecord.setIncome(record.getIncome());
         newRecord.setNetIncome(calculateNetIncome(newRecord));
-        property.getMonthlyRecords().add(newRecord);
-        propertyRepository.save(property);
+        
+        // 4. Persist new record
         return monthlyRecordRepository.save(newRecord);
     }
+
     
     @Transactional
     public MonthlyRecord update(Long id, CreateRecordDTO record) {

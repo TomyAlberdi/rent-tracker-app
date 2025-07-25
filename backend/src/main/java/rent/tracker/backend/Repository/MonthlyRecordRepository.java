@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MonthlyRecordRepository extends JpaRepository<MonthlyRecord, Long> {
-    Optional<MonthlyRecord> findByPropertyAndMonthAndYear(Property property, int month, int year);
+    Optional<MonthlyRecord> findByPropertyIdAndMonthAndYear(Long propertyId, Integer month, Integer year);
     List<MonthlyRecord> findByPropertyAndYear(Property property, int year);
 }
