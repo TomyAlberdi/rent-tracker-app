@@ -1,12 +1,10 @@
 package rent.tracker.backend.Controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rent.tracker.backend.DTO.CreateRecordDTO;
-import rent.tracker.backend.DTO.RecordDTO;
+import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
+import rent.tracker.backend.DTO.MonthlyRecord.RecordDTO;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Mapper.MonthlyRecordMapper;
 import rent.tracker.backend.Service.MonthlyRecordService;

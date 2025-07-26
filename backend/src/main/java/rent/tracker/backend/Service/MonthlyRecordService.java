@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rent.tracker.backend.DTO.CreateRecordDTO;
+import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Entity.Property;
 import rent.tracker.backend.Repository.MonthlyRecordRepository;

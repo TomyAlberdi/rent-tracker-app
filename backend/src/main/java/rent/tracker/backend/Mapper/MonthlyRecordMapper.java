@@ -1,6 +1,6 @@
 package rent.tracker.backend.Mapper;
 
-import rent.tracker.backend.DTO.RecordDTO;
+import rent.tracker.backend.DTO.MonthlyRecord.RecordDTO;
 import rent.tracker.backend.Entity.Group;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Entity.Property;
