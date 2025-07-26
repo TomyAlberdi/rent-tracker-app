@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Entity.Property;
+import rent.tracker.backend.Mapper.MonthlyRecordMapper;
 import rent.tracker.backend.Repository.MonthlyRecordRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 
@@ -36,23 +37,17 @@ public class MonthlyRecordService {
         if (exists) {
             throw new IllegalStateException("A record already exists for this property, month, and year.");
         }
-        MonthlyRecord newRecord = new MonthlyRecord();
-        newRecord.setProperty(property);
-        newRecord.setMonth(record.getMonth());
-        newRecord.setYear(record.getYear());
-        newRecord.setIncome(record.getIncome());
+        MonthlyRecord newRecord = MonthlyRecordMapper.toEntity(record, property);
         newRecord.setNetIncome(calculateNetIncome(newRecord));
         return monthlyRecordRepository.save(newRecord);
     }
-
+    
     
     @Transactional
     public MonthlyRecord update(Long id, CreateRecordDTO record) {
         MonthlyRecord existing = monthlyRecordRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("MonthlyRecord not found with ID: " + id));
-        existing.setMonth(record.getMonth());
-        existing.setYear(record.getYear());
-        existing.setIncome(record.getIncome());
+        MonthlyRecordMapper.updateFromDTO(existing, record, existing.getProperty());
         existing.setNetIncome(calculateNetIncome(existing));
         return monthlyRecordRepository.save(existing);
     }

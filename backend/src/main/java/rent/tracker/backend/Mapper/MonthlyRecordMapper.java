@@ -1,5 +1,6 @@
 package rent.tracker.backend.Mapper;
 
+import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
 import rent.tracker.backend.DTO.MonthlyRecord.RecordDTO;
 import rent.tracker.backend.Entity.Group;
 import rent.tracker.backend.Entity.MonthlyRecord;
@@ -21,6 +22,19 @@ public class MonthlyRecordMapper {
         dto.setIncome(record.getIncome());
         dto.setNetIncome(record.getNetIncome());
         return dto;
+    }
+    
+    public static MonthlyRecord toEntity(CreateRecordDTO dto, Property property) {
+        MonthlyRecord record = new MonthlyRecord();
+        updateFromDTO(record, dto, property);
+        return record;
+    }
+    
+    public static void updateFromDTO(MonthlyRecord record, CreateRecordDTO dto, Property property) {
+        record.setProperty(property);
+        record.setMonth(dto.getMonth());
+        record.setYear(dto.getYear());
+        record.setIncome(dto.getIncome());
     }
     
 }
