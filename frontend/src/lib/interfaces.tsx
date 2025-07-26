@@ -35,3 +35,12 @@ export interface RecordDTO {
   income: number;
   netIncome: number;
 }
+
+export interface ExpenseDTO {
+  id: number;
+  recordId: number;
+  title: string;
+  description: string;
+  amount: number;
+  share?: number;
+}

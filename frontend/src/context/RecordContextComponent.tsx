@@ -75,10 +75,108 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
     }
   };
 
+  const getExpenses = async (recordId: number) => {
+    try {
+      const url = `${BASE_URL}/expense/${recordId}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn("No expenses found: ", res);
+        return [];
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("Failed to fetch expenses", err);
+      return [];
+    }
+  };
+
+  const addExpense = async (
+    recordId: number,
+    title: string,
+    description: string,
+    amount: number,
+    share: number
+  ) => {
+    try {
+      const response = await fetch(`${BASE_URL}/expense`, {
+        method: "POST",
+        body: JSON.stringify({
+          recordId,
+          title,
+          description,
+          amount,
+          share,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to add expense:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to add expense", err);
+    }
+  };
+
+  const updateExpense = async (
+    id: number,
+    recordId: number,
+    title: string,
+    description: string,
+    amount: number,
+    share: number
+  ) => {
+    try {
+      const response = await fetch(`${BASE_URL}/expense/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          recordId,
+          title,
+          description,
+          amount,
+          share,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to update expense:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to update expense", err);
+    }
+  };
+
+  const deleteExpense = async (id: number) => {
+    try {
+      const response = await fetch(`${BASE_URL}/expense/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to delete expense:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to delete expense", err);
+    }
+  };
+
   const exportData: RecordContextType = {
     getRecords,
     createRecord,
     updateRecord,
+    getExpenses,
+    addExpense,
+    updateExpense,
+    deleteExpense,
   };
 
   return (
