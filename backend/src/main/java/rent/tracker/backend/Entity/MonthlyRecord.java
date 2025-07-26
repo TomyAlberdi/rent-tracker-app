@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -39,8 +42,10 @@ public class MonthlyRecord {
     @Min(0)
     private Double income;
     
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Expense> expenses = new ArrayList<>();
+    
     @NotNull
     private Double netIncome;
     
-    //TODO: design, create and add expenses to monthly record
 }
