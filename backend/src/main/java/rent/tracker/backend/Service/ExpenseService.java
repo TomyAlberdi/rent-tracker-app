@@ -19,6 +19,7 @@ public class ExpenseService {
     
     private final ExpenseRepository expenseRepository;
     private final MonthlyRecordRepository monthlyRecordRepository;
+    private final MonthlyRecordService monthlyRecordService;
     
     public List<Expense> getByRecord(Long recordId) {
         MonthlyRecord record = monthlyRecordRepository.findById(recordId)
@@ -31,23 +32,35 @@ public class ExpenseService {
         MonthlyRecord record = monthlyRecordRepository.findById(expense.getRecordId())
                 .orElseThrow(() -> new EntityNotFoundException("Monthly Record not found with ID: " + expense.getRecordId()));
         Expense newExpense = ExpenseMapper.toEntity(expense, record);
-        return expenseRepository.save(newExpense);
+        Expense savedExpense = expenseRepository.save(newExpense);
+        updateNetIncome(record);
+        return savedExpense;
     }
     
     @Transactional
     public Expense update(Long id, CreateExpenseDTO expense) {
         Expense existing = expenseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
-        ExpenseMapper.updateFromDTO(existing, expense, existing.getRecord());
-        return expenseRepository.save(existing);
+        MonthlyRecord record = existing.getRecord();
+        ExpenseMapper.updateFromDTO(existing, expense, record);
+        Expense updated = expenseRepository.save(existing);
+        updateNetIncome(record);
+        return updated;
     }
     
     @Transactional
     public void delete(Long id) {
-        if (!expenseRepository.existsById(id)) {
-            throw new EntityNotFoundException("Expense not found with ID: " + id);
-        }
-        expenseRepository.deleteById(id);
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
+        MonthlyRecord record = expense.getRecord();
+        expenseRepository.delete(expense);
+        updateNetIncome(record);
+    }
+    
+    private void updateNetIncome(MonthlyRecord record) {
+        Double updatedNetIncome = monthlyRecordService.calculateNetIncome(record.getId(), record.getIncome());
+        record.setNetIncome(updatedNetIncome);
+        monthlyRecordRepository.save(record);
     }
     
 }

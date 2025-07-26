@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
+import rent.tracker.backend.Entity.Expense;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Entity.Property;
 import rent.tracker.backend.Mapper.MonthlyRecordMapper;
+import rent.tracker.backend.Repository.ExpenseRepository;
 import rent.tracker.backend.Repository.MonthlyRecordRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 
@@ -19,6 +21,7 @@ public class MonthlyRecordService {
     
     private final MonthlyRecordRepository monthlyRecordRepository;
     private final PropertyRepository propertyRepository;
+    private final ExpenseRepository expenseRepository;
     
     public List<MonthlyRecord> getByPropertyAndYear(Long propertyId, int year) {
         Property property = propertyRepository.findById(propertyId)
@@ -38,7 +41,7 @@ public class MonthlyRecordService {
             throw new IllegalStateException("A record already exists for this property, month, and year.");
         }
         MonthlyRecord newRecord = MonthlyRecordMapper.toEntity(record, property);
-        newRecord.setNetIncome(calculateNetIncome(newRecord));
+        newRecord.setNetIncome(calculateNetIncome(newRecord.getId(), newRecord.getIncome()));
         return monthlyRecordRepository.save(newRecord);
     }
     
@@ -48,7 +51,7 @@ public class MonthlyRecordService {
         MonthlyRecord existing = monthlyRecordRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("MonthlyRecord not found with ID: " + id));
         MonthlyRecordMapper.updateFromDTO(existing, record, existing.getProperty());
-        existing.setNetIncome(calculateNetIncome(existing));
+        existing.setNetIncome(calculateNetIncome(existing.getId(), existing.getNetIncome()));
         return monthlyRecordRepository.save(existing);
     }
     
@@ -60,8 +63,9 @@ public class MonthlyRecordService {
         monthlyRecordRepository.deleteById(id);
     }
     
-    public Double calculateNetIncome(MonthlyRecord record) {
-        return record.getIncome();
+    public Double calculateNetIncome(Long recordId, Double income) {
+        Double totalExpenses = expenseRepository.sumExpensesByRecordId(recordId);
+        return income - totalExpenses;
     }
     
 }
