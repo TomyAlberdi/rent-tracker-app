@@ -41,6 +41,7 @@ public class GroupService {
         return returnGroups;
     }
     
+    @Transactional
     public GroupDTO createGroup(CreateGroupDTO dto) {
         Group group = GroupMapper.toEntity(dto);
         return GroupMapper.toDTO(groupRepository.save(group));
@@ -52,6 +53,7 @@ public class GroupService {
         return GroupMapper.toDTO(group);
     }
     
+    @Transactional
     public GroupDTO updateGroup(Long id, CreateGroupDTO dto) {
         Group existing = groupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found with ID: " + id));
