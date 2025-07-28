@@ -14,11 +14,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { RecordDTO } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
 import { useState } from "react";
@@ -48,7 +49,7 @@ const PropertyNetIncomeChart = ({
   propertyName,
   records,
 }: PropertyNetIncomeChartProps) => {
-  const [DrawerOpen, setDrawerOpen] = useState(false);
+  const [DialogOpen, setDialogOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
   const filledRecords = Array.from({ length: 12 }, (_, i) => {
@@ -90,7 +91,7 @@ const PropertyNetIncomeChart = ({
       );
       if (record) {
         setSelectedMonth(record.month);
-        setDrawerOpen(true);
+        setDialogOpen(true);
       }
     }
   };
@@ -133,25 +134,30 @@ const PropertyNetIncomeChart = ({
           </CardContent>
         </CardHeader>
       </Card>
-      <Drawer open={DrawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent
+      <Dialog open={DialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent
           aria-describedby={undefined}
-          className="flex flex-col justify-center items-center pb-4"
+          //TODO: Fix dialog height when there's no/few expenses
+          className="flex flex-col justify-center items-center pb-4 w-[60vw] h-full max-h-[90vh]"
         >
-          <DrawerHeader className="flex items-center">
-            <DrawerTitle className="alternate-font text-xl w-2/3 py-4">
-              Registro de ingresos para la propiedad <br />
-              <Button
-                className="w-full mt-4 cursor-default"
-                variant={"outline"}
-              >
-                {propertyName}
-              </Button>
-            </DrawerTitle>
-          </DrawerHeader>
-          {selectedRecord && <AddRecord record={selectedRecord} />}
-        </DrawerContent>
-      </Drawer>
+          <ScrollArea className="w-full h-full">
+            <div className="max-h-full w-full">
+              <DialogHeader className="flex items-center">
+                <DialogTitle className="alternate-font text-xl w-full py-4">
+                  Registro de ingresos para la propiedad <br />
+                  <Button
+                    className="w-full mt-4 cursor-default"
+                    variant={"outline"}
+                  >
+                    {propertyName}
+                  </Button>
+                </DialogTitle>
+              </DialogHeader>
+              {selectedRecord && <AddRecord record={selectedRecord} />}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

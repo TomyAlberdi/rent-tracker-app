@@ -1,3 +1,4 @@
+import RecordExpenses from "@/components/RecordExpenses";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -55,6 +56,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
   });
 
   useEffect(() => {
+    //TODO: abstact get expenses to parent component and pass it to this component to calculate net income
     setCalculatedNetIncome(record.income);
   }, [record.income]);
 
@@ -88,7 +90,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-2/5">
+    <div className="flex flex-col justify-center items-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -163,7 +165,6 @@ const AddRecord = ({ record }: AddRecordProps) => {
                 <FormControl>
                   <Input
                     {...field}
-                    defaultValue={record.income}
                     min={0}
                     type="number"
                     className="w-1/2"
@@ -179,9 +180,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
               </FormItem>
             )}
           />
-          <div className="w-full bg-rose-900 text-white text-center py-2 rounded-md">
-            <h2 className="alternate-font">Gastos Registrados</h2>
-          </div>
+          <RecordExpenses record={record} editing={Editing} />
           <div className="w-full text-center">
             <h2 className="alternate-font flex flex-col">
               Ingreso neto
