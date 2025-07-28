@@ -8,11 +8,11 @@ interface RecordContextComponentProps {
 const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
   children,
 }) => {
-  const BASE_URL = "http://localhost:8081/record";
+  const BASE_URL = "http://localhost:8081";
 
   const getRecords = async (propertyId: number, year: number) => {
     try {
-      const url = `${BASE_URL}?propertyId=${propertyId}&year=${year}`;
+      const url = `${BASE_URL}/record?propertyId=${propertyId}&year=${year}`;
       const res = await fetch(url);
       if (!res.ok) {
         console.warn("No records found: ", res);
@@ -33,7 +33,7 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
     income: number
   ) => {
     try {
-      const response = await fetch(`${BASE_URL}`, {
+      const response = await fetch(`${BASE_URL}/record`, {
         method: "POST",
         body: JSON.stringify({ propertyId, month, year, income }),
         headers: {
@@ -58,7 +58,7 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
     income: number
   ) => {
     try {
-      const response = await fetch(`${BASE_URL}/${id}`, {
+      const response = await fetch(`${BASE_URL}/record/${id}`, {
         method: "PUT",
         body: JSON.stringify({ propertyId, month, year, income }),
         headers: {
