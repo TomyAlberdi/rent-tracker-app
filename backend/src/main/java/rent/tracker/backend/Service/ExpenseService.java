@@ -11,7 +11,10 @@ import rent.tracker.backend.Mapper.ExpenseMapper;
 import rent.tracker.backend.Repository.ExpenseRepository;
 import rent.tracker.backend.Repository.MonthlyRecordRepository;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +38,21 @@ public class ExpenseService {
         Expense savedExpense = expenseRepository.save(newExpense);
         updateNetIncome(record);
         return savedExpense;
+    }
+    
+    @Transactional
+    public List<Expense> createMultiple(List<CreateExpenseDTO> expenses) {
+        if (expenses == null || expenses.isEmpty()) {
+            return Collections.emptyList();
+        }
+        MonthlyRecord record = monthlyRecordRepository.findById(expenses.get(0).getRecordId())
+                .orElseThrow(() -> new EntityNotFoundException("Monthly Record not found with ID: " + expenses.get(0).getRecordId()));
+        List<Expense> expenseEntities = expenses.stream()
+                .map(dto -> ExpenseMapper.toEntity(dto, record))
+                .collect(Collectors.toList());
+        List<Expense> savedExpenses = expenseRepository.saveAll(expenseEntities);
+        updateNetIncome(record);
+        return savedExpenses;
     }
     
     @Transactional

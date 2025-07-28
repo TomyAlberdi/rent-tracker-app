@@ -10,6 +10,7 @@ import rent.tracker.backend.Mapper.ExpenseMapper;
 import rent.tracker.backend.Service.ExpenseService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/expense")
@@ -32,6 +33,15 @@ public class ExpenseController {
         Expense newExpense = expenseService.create(expense);
         ExpenseDTO newExpenseDTO = ExpenseMapper.toDTO(newExpense);
         return ResponseEntity.ok(newExpenseDTO);
+    }
+    
+    @PostMapping("/batch")
+    public ResponseEntity<?> createMultiple(@RequestBody List<CreateExpenseDTO> expenses) {
+        List<Expense> newExpenses = expenseService.createMultiple(expenses);
+        List<ExpenseDTO> newExpensesDTO = newExpenses.stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+        return ResponseEntity.ok(newExpensesDTO);
     }
     
     @PutMapping("/{id}")
