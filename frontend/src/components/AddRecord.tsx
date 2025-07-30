@@ -90,7 +90,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="w-full flex flex-col justify-center items-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

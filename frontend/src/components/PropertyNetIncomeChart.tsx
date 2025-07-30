@@ -19,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import type { RecordDTO } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
 import { useState } from "react";
@@ -137,25 +136,20 @@ const PropertyNetIncomeChart = ({
       <Dialog open={DialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent
           aria-describedby={undefined}
-          //TODO: Fix dialog height when there's no/few expenses
-          className="flex flex-col justify-center items-center pb-4 w-[60vw] h-full max-h-[90vh]"
+          className="flex flex-col justify-start items-center pb-4 max-h-[80vh] min-h-[300px] overflow-y-scroll custom-sidebar"
         >
-          <ScrollArea className="w-full h-full">
-            <div className="max-h-full w-full">
-              <DialogHeader className="flex items-center">
-                <DialogTitle className="alternate-font text-xl w-full py-4">
-                  Registro de ingresos para la propiedad <br />
-                  <Button
-                    className="w-full mt-4 cursor-default"
-                    variant={"outline"}
-                  >
-                    {propertyName}
-                  </Button>
-                </DialogTitle>
-              </DialogHeader>
-              {selectedRecord && <AddRecord record={selectedRecord} />}
-            </div>
-          </ScrollArea>
+            <DialogHeader className="w-full flex items-center">
+              <DialogTitle className="alternate-font text-xl w-full pt-4">
+                Registro de ingresos para la propiedad <br />
+                <Button
+                  className="w-full mt-4 cursor-default"
+                  variant={"outline"}
+                >
+                  {propertyName}
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
+            {selectedRecord && <AddRecord record={selectedRecord} />}
         </DialogContent>
       </Dialog>
     </>
