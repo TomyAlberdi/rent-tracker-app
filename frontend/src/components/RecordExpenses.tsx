@@ -1,62 +1,53 @@
 import ExpenseCard from "@/components/ExpenseCard";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useRecordContext } from "@/context/useRecordContext";
-import { type ExpenseDTO, type RecordDTO } from "@/lib/interfaces";
+import { getTotalExpenses } from "@/lib/utils";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import type { UseFormReturn } from "react-hook-form";
+import z from "zod";
 
+const CreateExpenseDTOSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  amount: z.number(),
+  share: z.number().optional(),
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const formSchema = z.object({
+  propertyId: z.number(),
+  month: z.number("Seleccione un mes").min(1, "El mes es obligatorio"),
+  year: z.number("Seleccione un año").min(1, "El año es obligatorio"),
+  income: z.string(),
+  expenses: z.array(CreateExpenseDTOSchema),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 interface RecordExpensesProps {
-  record: RecordDTO;
+  form: UseFormReturn<FormSchema>;
   editing: boolean;
 }
 
-const RecordExpenses = ({ record, editing }: RecordExpensesProps) => {
-  const { getExpenses, addExpense, updateExpense, deleteExpense } =
-    useRecordContext();
-
-  const [Expenses, setExpenses] = useState<ExpenseDTO[]>([]);
-  const [reloadExpenses, setReloadExpenses] = useState(false);
-  const [Loading, setLoading] = useState(false);
-  const [ExpensesAmount, setExpensesAmount] = useState(0);
-
-  useEffect(() => {
-    if (!record.id) return;
-    setLoading(true);
-    getExpenses(record.id)
-      .then((expenses) => {
-        setExpenses(expenses);
-        setExpensesAmount(expenses.length);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record.id, reloadExpenses]);
-
-  if (Loading)
-    return (
-      <Skeleton className="w-full bg-rose-900 text-white text-center py-2 rounded-md">
-        <h2 className="alternate-font">Cargando gastos...</h2>
-      </Skeleton>
-    );
+const RecordExpenses = ({ form, editing }: RecordExpensesProps) => {
+  const expenses = form.getValues("expenses");
 
   return (
     <div className="w-full bg-rose-900 text-white text-center p-2 rounded-md flex flex-col justify-center items-center gap-2">
       <h2 className="alternate-font">
-        {ExpensesAmount === 0
+        {expenses.length === 0
           ? "No hay gastos registrados."
           : "Gastos Registrados"}
       </h2>
-      {Expenses.map((expense, index) => (
-        <ExpenseCard
-          key={index}
-          expense={expense}
-          reloadExpenses={reloadExpenses}
-          setReloadExpenses={setReloadExpenses}
-        />
+      {expenses.map((expense, index) => (
+        <ExpenseCard key={index} expense={expense} form={form} />
       ))}
+      {expenses.length > 0 && (
+        <h2 className="alternate-font">
+          Total Gastos: ${getTotalExpenses(expenses)}
+        </h2>
+      )}
       <Button variant={"default"} className="w-1/2" disabled={!editing}>
+        {/* TODO: Implement adding expense to form data */}
+        {/* ransform expense card into a form with default values and add new expense to form data */}
         <CirclePlus /> Añadir Gasto
       </Button>
     </div>

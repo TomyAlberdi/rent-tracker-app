@@ -34,11 +34,28 @@ export interface RecordDTO {
   year: number;
   income: number;
   netIncome: number;
+  expenses: ExpenseDTO[];
+  totalExpenses?: number;
 }
 
 export interface ExpenseDTO {
   id: number;
   recordId: number;
+  title: string;
+  description: string;
+  amount: number;
+  share?: number;
+}
+
+export interface CreateRecordDTO {
+  propertyId: number;
+  month: number;
+  year: number;
+  income: number;
+  expenses: CreateExpenseDTO[];
+}
+
+export interface CreateExpenseDTO {
   title: string;
   description: string;
   amount: number;

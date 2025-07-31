@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { RecordDTO } from "@/lib/interfaces";
-import { getMonthName } from "@/lib/utils";
+import { getMonthName, getTotalExpenses } from "@/lib/utils";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
@@ -36,7 +36,7 @@ const chartConfig = {
     label: "Ingresos",
     color: "#00bc7d",
   },
-  expenses: {
+  totalExpenses: {
     label: "Gastos",
     color: "#ff2056",
   },
@@ -54,7 +54,10 @@ const PropertyNetIncomeChart = ({
   const filledRecords = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1;
     const found = records.find((r) => r.month === month);
-    if (found) return found;
+    if (found) {
+      found.totalExpenses = getTotalExpenses(found.expenses);
+      return found;
+    };
     const base = records[0] || {};
     return {
       propertyId: propertyId,
@@ -64,8 +67,9 @@ const PropertyNetIncomeChart = ({
       month,
       year,
       income: 0,
-      expenses: 0,
       netIncome: 0,
+      expenses: [],
+      totalExpenses: 0,
     };
   });
 
@@ -123,7 +127,7 @@ const PropertyNetIncomeChart = ({
                   className="cursor-pointer"
                 />
                 <Bar
-                  dataKey={"expenses"}
+                  dataKey={"totalExpenses"}
                   fill={"#ff2056"}
                   radius={4}
                   className="cursor-pointer"
@@ -138,18 +142,18 @@ const PropertyNetIncomeChart = ({
           aria-describedby={undefined}
           className="flex flex-col justify-start items-center pb-4 max-h-[80vh] min-h-[300px] overflow-y-scroll custom-sidebar"
         >
-            <DialogHeader className="w-full flex items-center">
-              <DialogTitle className="alternate-font text-xl w-full pt-4">
-                Registro de ingresos para la propiedad <br />
-                <Button
-                  className="w-full mt-4 cursor-default"
-                  variant={"outline"}
-                >
-                  {propertyName}
-                </Button>
-              </DialogTitle>
-            </DialogHeader>
-            {selectedRecord && <AddRecord record={selectedRecord} />}
+          <DialogHeader className="w-full flex items-center">
+            <DialogTitle className="alternate-font text-xl w-full pt-4">
+              Registro de ingresos para la propiedad <br />
+              <Button
+                className="w-full mt-4 cursor-default"
+                variant={"outline"}
+              >
+                {propertyName}
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          {selectedRecord && <AddRecord record={selectedRecord} />}
         </DialogContent>
       </Dialog>
     </>

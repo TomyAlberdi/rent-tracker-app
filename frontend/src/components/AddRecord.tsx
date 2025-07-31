@@ -17,27 +17,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRecordContext } from "@/context/useRecordContext";
-import type { RecordDTO } from "@/lib/interfaces";
-import { getMonthName } from "@/lib/utils";
+import type { CreateRecordDTO, RecordDTO } from "@/lib/interfaces";
+import { getMonthName, getTotalExpenses } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleSlash, FileCheck, PencilLine } from "lucide-react";
+import { CircleSlash, FileCheck, PencilLine, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 interface AddRecordProps {
   record: RecordDTO;
 }
 
+const CreateExpenseDTOSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  amount: z.number(),
+  share: z.number().optional(),
+});
+
 const formSchema = z.object({
   propertyId: z.number(),
   month: z.number("Seleccione un mes").min(1, "El mes es obligatorio"),
   year: z.number("Seleccione un año").min(1, "El año es obligatorio"),
   income: z.string(),
+  expenses: z.array(CreateExpenseDTOSchema),
 });
 
 const AddRecord = ({ record }: AddRecordProps) => {
-  const { createRecord, updateRecord } = useRecordContext();
+  const { saveRecord, deleteRecord } = useRecordContext();
 
   const [Editing, setEditing] = useState(false);
   const [Loading, setLoading] = useState(false);
@@ -52,41 +61,44 @@ const AddRecord = ({ record }: AddRecordProps) => {
       month: record.month,
       year: record.year,
       income: record.income.toString(),
+      expenses: record.expenses,
     },
   });
 
   useEffect(() => {
-    //TODO: abstact get expenses to parent component and pass it to this component to calculate net income
-    setCalculatedNetIncome(record.income);
-  }, [record.income]);
+    setCalculatedNetIncome(
+      record.income - getTotalExpenses(form.getValues("expenses"))
+    );
+  }, [record.income, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (record.id) {
-      updateRecord(
-        record.id,
-        values.propertyId,
-        values.month,
-        values.year,
-        Number(values.income)
-      ).finally(() => {
-        form.reset();
-        setLoading(false);
-        window.location.reload();
-        setEditing(false);
-      });
-    } else {
-      createRecord(
-        values.propertyId,
-        values.month,
-        values.year,
-        Number(values.income)
-      ).finally(() => {
-        form.reset();
-        setLoading(false);
-        window.location.reload();
-        setEditing(false);
-      });
-    }
+    setLoading(true);
+    const recordToSave: CreateRecordDTO = {
+      propertyId: values.propertyId,
+      month: values.month,
+      year: values.year,
+      income: Number(values.income),
+      expenses: values.expenses,
+    };
+    saveRecord(recordToSave).finally(() => {
+      form.reset();
+      setLoading(false);
+      setEditing(false);
+    });
+  };
+
+  const handleDeleteClick = () => {
+    toast.warning("¿Desea eliminar el registro?", {
+      description: "Esta acción es irreversible.",
+      action: <Button onClick={handleDelete}>Eliminar</Button>,
+    });
+  };
+
+  const handleDelete = async () => {
+    if (!record.id) return;
+    deleteRecord(record.id).finally(() => {
+      window.location.reload();
+    });
   };
 
   return (
@@ -180,7 +192,10 @@ const AddRecord = ({ record }: AddRecordProps) => {
               </FormItem>
             )}
           />
-          <RecordExpenses record={record} editing={Editing} />
+          <RecordExpenses
+            form={form}
+            editing={Editing}
+          />
           <div className="w-full text-center">
             <h2 className="alternate-font flex flex-col">
               Ingreso neto
@@ -207,6 +222,15 @@ const AddRecord = ({ record }: AddRecordProps) => {
                 <Button disabled={Loading} type="submit" className="w-1/4">
                   <FileCheck />
                   Confirmar
+                </Button>
+                <Button
+                  disabled={Loading}
+                  variant={"destructive"}
+                  type="button"
+                  onClick={handleDeleteClick}
+                  className="flex justify-center items-center"
+                >
+                  <Trash2 size={20} />
                 </Button>
               </>
             ) : (
