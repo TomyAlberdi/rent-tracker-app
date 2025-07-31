@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rent.tracker.backend.DTO.Expense.CreateExpenseDTO;
+import rent.tracker.backend.DTO.Expense.ExpenseDTO;
 import rent.tracker.backend.Entity.Expense;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Mapper.ExpenseMapper;
@@ -22,63 +23,27 @@ public class ExpenseService {
     
     private final ExpenseRepository expenseRepository;
     private final MonthlyRecordRepository monthlyRecordRepository;
-    private final MonthlyRecordService monthlyRecordService;
     
-    public List<Expense> getByRecord(Long recordId) {
+    public List<ExpenseDTO> getByRecord(Long recordId) {
         MonthlyRecord record = monthlyRecordRepository.findById(recordId)
                 .orElseThrow(() -> new EntityNotFoundException("Monthly Record not found with ID: " + recordId));
-        return expenseRepository.findByRecord(record);
+        List<Expense> expenses = expenseRepository.findByRecord(record);
+        return expenses.stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
     }
     
     @Transactional
-    public Expense create(CreateExpenseDTO expense) {
-        MonthlyRecord record = monthlyRecordRepository.findById(expense.getRecordId())
-                .orElseThrow(() -> new EntityNotFoundException("Monthly Record not found with ID: " + expense.getRecordId()));
-        Expense newExpense = ExpenseMapper.toEntity(expense, record);
-        Expense savedExpense = expenseRepository.save(newExpense);
-        updateNetIncome(record);
-        return savedExpense;
-    }
-    
-    @Transactional
-    public List<Expense> createMultiple(List<CreateExpenseDTO> expenses) {
+    public List<ExpenseDTO> attachExpenses(List<CreateExpenseDTO> expenses, Long recordId) {
         if (expenses == null || expenses.isEmpty()) {
             return Collections.emptyList();
         }
-        MonthlyRecord record = monthlyRecordRepository.findById(expenses.get(0).getRecordId())
-                .orElseThrow(() -> new EntityNotFoundException("Monthly Record not found with ID: " + expenses.get(0).getRecordId()));
-        List<Expense> expenseEntities = expenses.stream()
-                .map(dto -> ExpenseMapper.toEntity(dto, record))
-                .collect(Collectors.toList());
-        List<Expense> savedExpenses = expenseRepository.saveAll(expenseEntities);
-        updateNetIncome(record);
-        return savedExpenses;
-    }
-    
-    @Transactional
-    public Expense update(Long id, CreateExpenseDTO expense) {
-        Expense existing = expenseRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
-        MonthlyRecord record = existing.getRecord();
-        ExpenseMapper.updateFromDTO(existing, expense, record);
-        Expense updated = expenseRepository.save(existing);
-        updateNetIncome(record);
-        return updated;
-    }
-    
-    @Transactional
-    public void delete(Long id) {
-        Expense expense = expenseRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Expense not found with ID: " + id));
-        MonthlyRecord record = expense.getRecord();
-        expenseRepository.delete(expense);
-        updateNetIncome(record);
-    }
-    
-    private void updateNetIncome(MonthlyRecord record) {
-        Double updatedNetIncome = monthlyRecordService.calculateNetIncome(record.getId(), record.getIncome());
-        record.setNetIncome(updatedNetIncome);
-        monthlyRecordRepository.save(record);
+        MonthlyRecord record = monthlyRecordRepository.findById(recordId)
+                .orElseThrow(() -> new EntityNotFoundException("Monthly Record not found with ID: " + recordId));
+        expenseRepository.deleteByRecordId(recordId);
+        List<Expense> newExpenses = ExpenseMapper.toEntity(expenses, record);
+        List<Expense> savedExpenses = expenseRepository.saveAll(newExpenses);
+        return ExpenseMapper.toDTO(savedExpenses);
     }
     
 }

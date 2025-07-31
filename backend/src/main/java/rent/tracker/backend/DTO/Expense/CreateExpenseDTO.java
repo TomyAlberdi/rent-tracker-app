@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateExpenseDTO {
     
-    private Long recordId;
     private String title;
     private String description;
     private Double amount;

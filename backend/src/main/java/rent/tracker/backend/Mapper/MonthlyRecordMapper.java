@@ -1,14 +1,17 @@
 package rent.tracker.backend.Mapper;
 
+import rent.tracker.backend.DTO.Expense.ExpenseDTO;
 import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
 import rent.tracker.backend.DTO.MonthlyRecord.RecordDTO;
 import rent.tracker.backend.Entity.Group;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Entity.Property;
 
+import java.util.List;
+
 public class MonthlyRecordMapper {
     
-    public static RecordDTO toDTO(MonthlyRecord record) {
+    public static RecordDTO toDTO(MonthlyRecord record, List<ExpenseDTO> expenses) {
         Property p = record.getProperty();
         Group g = p.getGroup();
         RecordDTO dto = new RecordDTO();
@@ -21,6 +24,7 @@ public class MonthlyRecordMapper {
         dto.setYear(record.getYear());
         dto.setIncome(record.getIncome());
         dto.setNetIncome(record.getNetIncome());
+        dto.setExpenses(expenses);
         return dto;
     }
     
@@ -35,6 +39,12 @@ public class MonthlyRecordMapper {
         record.setMonth(dto.getMonth());
         record.setYear(dto.getYear());
         record.setIncome(dto.getIncome());
+    }
+    
+    public static List<RecordDTO> toDTO(List<MonthlyRecord> records, List<ExpenseDTO> expenses) {
+        return records.stream()
+                .map(record -> MonthlyRecordMapper.toDTO(record, expenses))
+                .toList();
     }
     
 }

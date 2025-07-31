@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    Optional<Expense> findByRecordId(Long recordId);
+    void deleteByRecordId(Long recordId);
     List<Expense> findByRecord(MonthlyRecord record);
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.record.id = :recordId")
     Double sumExpensesByRecordId(@Param("recordId") Long recordId);

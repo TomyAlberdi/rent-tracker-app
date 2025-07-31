@@ -23,23 +23,12 @@ public class MonthlyRecordController {
             @RequestParam Long propertyId,
             @RequestParam int year
     ) {
-        List<MonthlyRecord> records = monthlyRecordService.getByPropertyAndYear(propertyId, year);
-        List<RecordDTO> dtos = records.stream()
-                .map(MonthlyRecordMapper::toDTO)
-                .toList();
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(monthlyRecordService.getByPropertyAndYear(propertyId, year));
     }
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CreateRecordDTO record) {
         MonthlyRecord monthlyRecord = monthlyRecordService.create(record);
-        RecordDTO recordDTO = MonthlyRecordMapper.toDTO(monthlyRecord);
-        return ResponseEntity.ok(recordDTO);
-    }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody CreateRecordDTO record) {
-        MonthlyRecord monthlyRecord = monthlyRecordService.update(id, record);
         RecordDTO recordDTO = MonthlyRecordMapper.toDTO(monthlyRecord);
         return ResponseEntity.ok(recordDTO);
     }

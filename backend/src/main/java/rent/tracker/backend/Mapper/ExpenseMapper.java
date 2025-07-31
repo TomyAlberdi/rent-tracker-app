@@ -5,6 +5,9 @@ import rent.tracker.backend.DTO.Expense.ExpenseDTO;
 import rent.tracker.backend.Entity.Expense;
 import rent.tracker.backend.Entity.MonthlyRecord;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExpenseMapper {
     
     public static ExpenseDTO toDTO(Expense expense) {
@@ -31,6 +34,18 @@ public class ExpenseMapper {
         expense.setAmount(dto.getAmount());
         expense.setShare(dto.getShare());
         expense.setRecord(record);
+    }
+    
+    public static List<ExpenseDTO> toDTO(List<Expense> expenses) {
+        return expenses.stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+    }
+    
+    public static List<Expense> toEntity(List<CreateExpenseDTO> dtos, MonthlyRecord record) {
+        return dtos.stream()
+                .map(dto -> ExpenseMapper.toEntity(dto, record))
+                .toList();
     }
     
 }

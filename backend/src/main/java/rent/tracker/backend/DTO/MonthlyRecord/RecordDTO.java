@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rent.tracker.backend.DTO.Expense.ExpenseDTO;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,4 +22,6 @@ public class RecordDTO {
     private Integer year;
     private Double income;
     private Double netIncome;
+    private List<ExpenseDTO> expenses;
+    
 }
