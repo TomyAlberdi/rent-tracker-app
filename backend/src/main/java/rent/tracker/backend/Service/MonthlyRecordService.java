@@ -11,6 +11,7 @@ import rent.tracker.backend.DTO.MonthlyRecord.RecordDTO;
 import rent.tracker.backend.Entity.Expense;
 import rent.tracker.backend.Entity.MonthlyRecord;
 import rent.tracker.backend.Entity.Property;
+import rent.tracker.backend.Mapper.ExpenseMapper;
 import rent.tracker.backend.Mapper.MonthlyRecordMapper;
 import rent.tracker.backend.Repository.ExpenseRepository;
 import rent.tracker.backend.Repository.MonthlyRecordRepository;
@@ -51,7 +52,7 @@ public class MonthlyRecordService {
         if (exists.isEmpty()) {
             // Creating new record entity, calculating net income and saving it
             MonthlyRecord newRecord = MonthlyRecordMapper.toEntity(record, property);
-            newRecord.setNetIncome(calculateNetIncome(record.getExpenses(), record.getIncome()));
+            newRecord.setNetIncome(calculateNetIncome(record.getIncome(), record.getExpenses()));
             MonthlyRecord savedRecord = monthlyRecordRepository.save(newRecord);
             // Saving expenses in the database (if not empty)
             List<ExpenseDTO> expenses = new ArrayList<>();
@@ -63,7 +64,7 @@ public class MonthlyRecordService {
         // If record exists
         MonthlyRecord monthlyRecord = exists.get();
         // Calculating net income and saving it
-        monthlyRecord.setNetIncome(calculateNetIncome(monthlyRecord.getId(), monthlyRecord.getIncome()));
+        monthlyRecord.setNetIncome(calculateNetIncome(monthlyRecord.getExpenses(), monthlyRecord.getIncome()));
         MonthlyRecord savedRecord = monthlyRecordRepository.save(monthlyRecord);
         // Saving expenses in the database (if not empty)
         List<ExpenseDTO> expenses = new ArrayList<>();
@@ -82,14 +83,17 @@ public class MonthlyRecordService {
         monthlyRecordRepository.deleteById(id);
     }
     
-    public Double calculateNetIncome(Long recordId, Double income) {
-        Double totalExpenses = expenseRepository.sumExpensesByRecordId(recordId);
+    public Double calculateNetIncome(Double income, List<CreateExpenseDTO> expenses) {
+        Double totalExpenses = 0.0;
+        for (CreateExpenseDTO expense : expenses) {
+            totalExpenses = totalExpenses + expense.getAmount();
+        }
         return income - totalExpenses;
     }
     
-    public Double calculateNetIncome(List<CreateExpenseDTO> expenses, Double income) {
+    public Double calculateNetIncome(List<Expense> expenses, Double income) {
         Double totalExpenses = 0.0;
-        for (CreateExpenseDTO expense : expenses) {
+        for (Expense expense : expenses) {
             totalExpenses = totalExpenses + expense.getAmount();
         }
         return income - totalExpenses;

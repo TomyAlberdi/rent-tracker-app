@@ -14,6 +14,4 @@ import java.util.Optional;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     void deleteByRecordId(Long recordId);
     List<Expense> findByRecord(MonthlyRecord record);
-    @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.record.id = :recordId")
-    Double sumExpensesByRecordId(@Param("recordId") Long recordId);
 }
