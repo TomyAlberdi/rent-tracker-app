@@ -27,10 +27,8 @@ public class MonthlyRecordController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CreateRecordDTO record) {
-        MonthlyRecord monthlyRecord = monthlyRecordService.create(record);
-        RecordDTO recordDTO = MonthlyRecordMapper.toDTO(monthlyRecord);
-        return ResponseEntity.ok(recordDTO);
+    public ResponseEntity<?> register(@RequestBody CreateRecordDTO record) {
+        return ResponseEntity.ok(monthlyRecordService.register(record));
     }
     
     @DeleteMapping("/{id}")

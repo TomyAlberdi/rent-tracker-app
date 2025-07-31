@@ -42,29 +42,35 @@ public class MonthlyRecordService {
     }
     
     @Transactional
-    public MonthlyRecord register(CreateRecordDTO record) {
+    public RecordDTO register(CreateRecordDTO record) {
         Property property = propertyRepository.findById(record.getPropertyId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Property not found with ID: " + record.getPropertyId()));
         Optional<MonthlyRecord> exists = monthlyRecordRepository.findByPropertyIdAndMonthAndYear(record.getPropertyId(), record.getMonth(), record.getYear());
+        // If record doesn't exist
         if (exists.isEmpty()) {
+            // Creating new record entity, calculating net income and saving it
             MonthlyRecord newRecord = MonthlyRecordMapper.toEntity(record, property);
-            expenseService.attachExpenses(record.getExpenses(), newRecord.getId());
-            newRecord.setNetIncome(calculateNetIncome(newRecord.getId(), record.getIncome()));
+            newRecord.setNetIncome(calculateNetIncome(record.getExpenses(), record.getIncome()));
+            MonthlyRecord savedRecord = monthlyRecordRepository.save(newRecord);
+            // Saving expenses in the database (if not empty)
+            List<ExpenseDTO> expenses = new ArrayList<>();
+            if (!record.getExpenses().isEmpty()) {
+                expenses = expenseService.attachExpenses(record.getExpenses(), savedRecord.getId());
+            }
+            return MonthlyRecordMapper.toDTO(savedRecord, expenses);
         }
-        
-        newRecord.setNetIncome(calculateNetIncome(newRecord.getId(), newRecord.getIncome()));
-        return monthlyRecordRepository.save(newRecord);
-    }
-    
-    
-    @Transactional
-    public MonthlyRecord update(Long id, CreateRecordDTO record) {
-        MonthlyRecord existing = monthlyRecordRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("MonthlyRecord not found with ID: " + id));
-        MonthlyRecordMapper.updateFromDTO(existing, record, existing.getProperty());
-        existing.setNetIncome(calculateNetIncome(existing.getId(), existing.getNetIncome()));
-        return monthlyRecordRepository.save(existing);
+        // If record exists
+        MonthlyRecord monthlyRecord = exists.get();
+        // Calculating net income and saving it
+        monthlyRecord.setNetIncome(calculateNetIncome(monthlyRecord.getId(), monthlyRecord.getIncome()));
+        MonthlyRecord savedRecord = monthlyRecordRepository.save(monthlyRecord);
+        // Saving expenses in the database (if not empty)
+        List<ExpenseDTO> expenses = new ArrayList<>();
+        if (!record.getExpenses().isEmpty()) {
+            expenses = expenseService.attachExpenses(record.getExpenses(), savedRecord.getId());
+        }
+        return MonthlyRecordMapper.toDTO(savedRecord, expenses);
     }
     
     @Transactional
