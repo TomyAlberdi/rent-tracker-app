@@ -1,25 +1,10 @@
 import ExpenseCard from "@/components/ExpenseCard";
 import { Button } from "@/components/ui/button";
+import { CreateExpenseDTOSchema, formSchema } from "@/lib/expenseSchemas";
 import { getTotalExpenses } from "@/lib/utils";
 import { CirclePlus } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import z from "zod";
-
-const CreateExpenseDTOSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  amount: z.number(),
-  share: z.number().optional(),
-});
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const formSchema = z.object({
-  propertyId: z.number(),
-  month: z.number("Seleccione un mes").min(1, "El mes es obligatorio"),
-  year: z.number("Seleccione un año").min(1, "El año es obligatorio"),
-  income: z.string(),
-  expenses: z.array(CreateExpenseDTOSchema),
-});
 
 type FormSchema = z.infer<typeof formSchema>;
 interface RecordExpensesProps {
@@ -28,7 +13,30 @@ interface RecordExpensesProps {
 }
 
 const RecordExpenses = ({ form, editing }: RecordExpensesProps) => {
-  const expenses = form.getValues("expenses");
+  const expenses: z.infer<typeof CreateExpenseDTOSchema>[] =
+    form.watch("expenses");
+
+  const addEmptyExpense = () => {
+    const currentExpenses = form.getValues("expenses") || [];
+    const newExpenses = [
+      ...currentExpenses,
+      {
+        id: Date.now() + Math.random(), // unique id
+        title: "",
+        description: "",
+        amount: 0,
+        share: undefined,
+      },
+    ];
+    form.setValue("expenses", newExpenses);
+  };
+
+  const removeExpense = (id: number) => {
+    const currentExpenses: z.infer<typeof CreateExpenseDTOSchema>[] =
+      form.getValues("expenses") || [];
+    const newExpenses = currentExpenses.filter((expense) => expense.id !== id);
+    form.setValue("expenses", newExpenses);
+  };
 
   return (
     <div className="w-full bg-rose-900 text-white text-center p-2 rounded-md flex flex-col justify-center items-center gap-2">
@@ -37,19 +45,31 @@ const RecordExpenses = ({ form, editing }: RecordExpensesProps) => {
           ? "No hay gastos registrados."
           : "Gastos Registrados"}
       </h2>
-      {expenses.map((expense, index) => (
-        <ExpenseCard key={index} expense={expense} form={form} />
+      {expenses.map((expense: z.infer<typeof CreateExpenseDTOSchema>) => (
+        <ExpenseCard
+          key={expense.id}
+          expense={expense}
+          form={form}
+          editing={editing}
+          removeExpense={removeExpense}
+        />
       ))}
       {expenses.length > 0 && (
         <h2 className="alternate-font">
           Total Gastos: ${getTotalExpenses(expenses)}
         </h2>
       )}
-      <Button variant={"default"} className="w-1/2" disabled={!editing}>
-        {/* TODO: Implement adding expense to form data */}
-        {/* ransform expense card into a form with default values and add new expense to form data */}
-        <CirclePlus /> Añadir Gasto
-      </Button>
+      {editing && (
+        <Button
+          variant={"default"}
+          className="w-1/2"
+          type="button"
+          disabled={!editing}
+          onClick={addEmptyExpense}
+        >
+          <CirclePlus /> Añadir Gasto
+        </Button>
+      )}
     </div>
   );
 };

@@ -69,7 +69,8 @@ const AddRecord = ({ record }: AddRecordProps) => {
     setCalculatedNetIncome(
       record.income - getTotalExpenses(form.getValues("expenses"))
     );
-  }, [record.income, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [record.income, form.watch("expenses")]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setLoading(true);
@@ -183,8 +184,9 @@ const AddRecord = ({ record }: AddRecordProps) => {
                     placeholder="Ingresos"
                     disabled={Loading || !Editing}
                     onChange={(e) => {
-                      field.onChange(e);
-                      setCalculatedNetIncome(Number(e.target.value));
+                      const value = e.target.value;
+                      field.onChange(value);
+                      setCalculatedNetIncome(Number(value) - getTotalExpenses(form.getValues("expenses")));
                     }}
                   />
                 </FormControl>
@@ -192,10 +194,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
               </FormItem>
             )}
           />
-          <RecordExpenses
-            form={form}
-            editing={Editing}
-          />
+          <RecordExpenses form={form} editing={Editing} />
           <div className="w-full text-center">
             <h2 className="alternate-font flex flex-col">
               Ingreso neto
@@ -214,7 +213,10 @@ const AddRecord = ({ record }: AddRecordProps) => {
                   type="button"
                   className="w-1/4"
                   variant={"destructive"}
-                  onClick={() => setEditing(false)}
+                  onClick={() => {
+                    form.reset();
+                    setEditing(false);
+                  }}
                 >
                   <CircleSlash />
                   Cancelar

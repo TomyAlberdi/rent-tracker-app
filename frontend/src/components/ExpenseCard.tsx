@@ -6,58 +6,137 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { CreateExpenseDTO } from "@/lib/interfaces";
-import { Trash2 } from "lucide-react";
+// import type { CreateExpenseDTO } from "@/lib/interfaces";
+import { CreateExpenseDTOSchema, formSchema } from "@/lib/expenseSchemas";
+import { Save, Trash2 } from "lucide-react";
+import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
 import z from "zod";
-
-const CreateExpenseDTOSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  amount: z.number(),
-  share: z.number().optional(),
-});
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const formSchema = z.object({
-  propertyId: z.number(),
-  month: z.number("Seleccione un mes").min(1, "El mes es obligatorio"),
-  year: z.number("Seleccione un año").min(1, "El año es obligatorio"),
-  income: z.string(),
-  expenses: z.array(CreateExpenseDTOSchema),
-});
+import { Input } from "./ui/input";
 
 type FormSchema = z.infer<typeof formSchema>;
 interface ExpenseCardProps {
-  expense: CreateExpenseDTO;
+  expense: z.infer<typeof CreateExpenseDTOSchema>;
   form: UseFormReturn<FormSchema>;
+  editing: boolean;
+  removeExpense: (id: number) => void;
 }
 
-const ExpenseCard = ({ expense, form }: ExpenseCardProps) => {
-  const onDeleteClick = () => {
-    //TODO: fix toast layout
-    toast.warning("¿Desea eliminar el gasto?", {
-      // TODO: Implement expense removal from form data
-      action: <Button onClick={() => {}}>Eliminar</Button>,
-    });
+const ExpenseCard = ({
+  expense,
+  form,
+  editing,
+  // index, // removed unused prop
+  removeExpense,
+}: ExpenseCardProps) => {
+  const [NewExpense, setNewExpense] = useState<
+    z.infer<typeof CreateExpenseDTOSchema>
+  >({
+    title: expense.title || "",
+    description: expense.description || "",
+    amount: expense.amount || 0,
+    share: expense.share || undefined,
+  });
+
+  const addExpense = () => {
+    if (!NewExpense.title || !NewExpense.amount) return;
+    const newExpenses: z.infer<typeof CreateExpenseDTOSchema>[] =
+      form.getValues("expenses") || [];
+    if (expense.id) {
+      const updatedExpenses = newExpenses.map((exp) =>
+        exp.id === expense.id ? { ...exp, ...NewExpense } : exp
+      );
+      form.setValue("expenses", updatedExpenses);
+    } else {
+      form.setValue("expenses", [
+        ...newExpenses,
+        { ...NewExpense, id: Date.now() + Math.random() },
+      ]);
+    }
   };
 
+  if (!editing)
+    return (
+      <Card className="w-full relative">
+        <CardHeader>
+          <CardTitle>{expense.title}</CardTitle>
+          {(expense.description || expense.share) && (
+            <CardDescription>
+              {expense.description}{" "}
+              {expense.share && `(Cuota N° ${expense.share})`}
+            </CardDescription>
+          )}
+        </CardHeader>
+        <CardContent>- $ {expense.amount}</CardContent>
+      </Card>
+    );
+
   return (
-    <Card className="w-full relative">
-      <div className="absolute top-2 right-2 flex justify-center items-center p-2 rounded-md bg-rose-900 cursor-pointer hover:bg-rose-800">
-        <Trash2 size={20} onClick={onDeleteClick} />
-      </div>
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>{expense.title}</CardTitle>
-        {(expense.description || expense.share) && (
-          <CardDescription>
-            {expense.description}{" "}
-            {expense.share && `(Cuota N° ${expense.share})`}
-          </CardDescription>
-        )}
+        <Input
+          value={NewExpense.title}
+          placeholder="Título"
+          onChange={(e) =>
+            setNewExpense((prev) => ({ ...prev, title: e.target.value }))
+          }
+          className="w-full"
+        />
+        <div className="flex items-center gap-2">
+          <Input
+            value={NewExpense.description}
+            placeholder="Descripción"
+            onChange={(e) =>
+              setNewExpense((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }))
+            }
+            className="w-3/4"
+          />
+          <Input
+            value={NewExpense.share ?? ""}
+            placeholder="Cuota"
+            type="number"
+            min={0}
+            onChange={(e) =>
+              setNewExpense((prev) => ({
+                ...prev,
+                share:
+                  e.target.value === "" ? undefined : Number(e.target.value),
+              }))
+            }
+            className="w-1/4"
+          />
+        </div>
+        <Input
+          type="number"
+          value={NewExpense.amount}
+          min={0}
+          onChange={(e) =>
+            setNewExpense((prev) => ({
+              ...prev,
+              amount: Number(e.target.value),
+            }))
+          }
+          className="w-full"
+        />
+        <div className="flex justify-center items-center gap-2 pt-2">
+          <Button
+            variant={"destructive"}
+            className="w-1/4 bg-rose-900!"
+            type="button"
+            onClick={() => expense.id && removeExpense(expense.id)}
+          >
+            <Trash2 size={20} />
+            Eliminar
+          </Button>
+          <Button className="w-1/4" type="button" onClick={addExpense}>
+            <Save size={20} />
+            Guardar
+          </Button>
+        </div>
       </CardHeader>
-      <CardContent>- $ {expense.amount}</CardContent>
     </Card>
   );
 };
