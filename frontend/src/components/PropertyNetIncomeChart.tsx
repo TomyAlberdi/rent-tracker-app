@@ -146,7 +146,7 @@ const PropertyNetIncomeChart = ({
           className="flex flex-col justify-start items-center pb-4 max-h-[80vh] min-h-[300px] overflow-y-scroll custom-sidebar"
         >
           <DialogHeader className="w-full flex items-center">
-            <DialogTitle className="alternate-font text-xl w-full pt-4">
+            <DialogTitle className="alternate-font text-xl w-full text-center pt-4">
               Registro de ingresos para la propiedad <br />
               <Button
                 className="w-full mt-4 cursor-default"
