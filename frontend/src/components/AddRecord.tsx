@@ -1,13 +1,5 @@
 import RecordExpenses from "@/components/RecordExpenses";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,73 +11,57 @@ import {
 import { useRecordContext } from "@/context/useRecordContext";
 import type { CreateRecordDTO, RecordDTO } from "@/lib/interfaces";
 import { getMonthName, getTotalExpenses } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleSlash, FileCheck, PencilLine, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
 
 interface AddRecordProps {
   record: RecordDTO;
 }
-
-const CreateExpenseDTOSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  amount: z.number(),
-  share: z.number().optional(),
-});
-
-const formSchema = z.object({
-  propertyId: z.number(),
-  month: z.number("Seleccione un mes").min(1, "El mes es obligatorio"),
-  year: z.number("Seleccione un año").min(1, "El año es obligatorio"),
-  income: z.string(),
-  expenses: z.array(CreateExpenseDTOSchema),
-});
 
 const AddRecord = ({ record }: AddRecordProps) => {
   const { saveRecord, deleteRecord } = useRecordContext();
 
   const [Editing, setEditing] = useState(false);
   const [Loading, setLoading] = useState(false);
+  const [Record, setRecord] = useState<CreateRecordDTO>({
+    propertyId: record.propertyId,
+    month: record.month,
+    year: record.year,
+    income: record.income,
+    expenses: record.expenses ? [...record.expenses] : [],
+  });
   const [CalculatedNetIncome, setCalculatedNetIncome] = useState(
     record.netIncome
   );
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+  useEffect(() => {
+    setCalculatedNetIncome(Record.income - getTotalExpenses(Record.expenses));
+  }, [Record.income, Record.expenses]);
+
+  const resetRecord = () => {
+    setRecord({
       propertyId: record.propertyId,
       month: record.month,
       year: record.year,
-      income: record.income.toString(),
-      expenses: record.expenses,
-    },
-  });
-
-  useEffect(() => {
-    setCalculatedNetIncome(
-      record.income - getTotalExpenses(form.getValues("expenses"))
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record.income, form.watch("expenses")]);
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setLoading(true);
-    const recordToSave: CreateRecordDTO = {
-      propertyId: values.propertyId,
-      month: values.month,
-      year: values.year,
-      income: Number(values.income),
-      expenses: values.expenses,
-    };
-    saveRecord(recordToSave).finally(() => {
-      form.reset();
-      setLoading(false);
-      setEditing(false);
+      income: record.income,
+      expenses: record.expenses ? [...record.expenses] : [],
     });
+  };
+
+  const onSubmit = () => {
+    setLoading(true);
+    const recordToSave = {
+      ...Record,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      expenses: Record.expenses.map(({ id, ...rest }) => rest),
+    };
+    saveRecord(recordToSave)
+      .finally(() => {
+        setLoading(false);
+        setEditing(false);
+        window.location.reload();
+      });
   };
 
   const handleDeleteClick = () => {
@@ -104,150 +80,130 @@ const AddRecord = ({ record }: AddRecordProps) => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 w-full"
-        >
-          <div className="flex justify-center items-center gap-4 w-full">
-            <FormField
-              control={form.control}
-              name="year"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Año</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={record.year.toString()}
-                    disabled={Loading || !Editing}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seleccione un año" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Array.from({ length: 10 }, (_, i) => i + 2025).map(
-                        (year) => (
-                          <SelectItem key={year} value={year.toString()}>
-                            {year}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="month"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Mes</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={record.month.toString()}
-                    disabled={Loading || !Editing}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seleccione un mes" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(
-                        (month) => (
-                          <SelectItem key={month} value={month.toString()}>
-                            {getMonthName(month)}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={form.control}
-            name="income"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Ingresos</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    min={0}
-                    type="number"
-                    className="w-1/2"
-                    placeholder="Ingresos"
-                    disabled={Loading || !Editing}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value);
-                      setCalculatedNetIncome(Number(value) - getTotalExpenses(form.getValues("expenses")));
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <div className="flex flex-col gap-4 w-full">
+        <div className="flex justify-center items-center gap-4 w-full">
+          <article className="w-full">
+            <span>Año</span>
+            <Select
+              onValueChange={(value) =>
+                setRecord((prev) => ({ ...prev, year: Number(value) }))
+              }
+              value={Record.year.toString()}
+              disabled={Loading || !Editing}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Seleccione un año" />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 10 }, (_, i) => i + 2025).map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </article>
+          <article className="w-full">
+            <span>Mes</span>
+            <Select
+              onValueChange={(value) =>
+                setRecord((prev) => ({ ...prev, month: Number(value) }))
+              }
+              value={Record.month.toString()}
+              disabled={Loading || !Editing}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Seleccione un mes" />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                  <SelectItem key={month} value={month.toString()}>
+                    {getMonthName(month)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </article>
+        </div>
+        <article className="w-full">
+          <span>Ingresos</span>
+          <Input
+            min={0}
+            type="number"
+            className="w-1/2"
+            placeholder="Ingresos"
+            value={Record.income}
+            disabled={Loading || !Editing}
+            onChange={(e) =>
+              setRecord((prev) => ({
+                ...prev,
+                income: Number(e.target.value),
+              }))
+            }
           />
-          <RecordExpenses form={form} editing={Editing} />
-          <div className="w-full text-center">
-            <h2 className="alternate-font flex flex-col">
-              Ingreso neto
-              <span className="text-xl font-semibold">
-                {CalculatedNetIncome >= 0
-                  ? `$ ${CalculatedNetIncome}`
-                  : `- $ ${Math.abs(CalculatedNetIncome)}`}
-              </span>
-            </h2>
-          </div>
-          <div className="w-full flex justify-center items-center gap-2">
-            {Editing ? (
-              <>
-                <Button
-                  disabled={Loading}
-                  type="button"
-                  className="w-1/4"
-                  variant={"destructive"}
-                  onClick={() => {
-                    form.reset();
-                    setEditing(false);
-                  }}
-                >
-                  <CircleSlash />
-                  Cancelar
-                </Button>
-                <Button disabled={Loading} type="submit" className="w-1/4">
-                  <FileCheck />
-                  Confirmar
-                </Button>
-                <Button
-                  disabled={Loading}
-                  variant={"destructive"}
-                  type="button"
-                  onClick={handleDeleteClick}
-                  className="flex justify-center items-center"
-                >
-                  <Trash2 size={20} />
-                </Button>
-              </>
-            ) : (
+        </article>
+        <RecordExpenses
+          Record={Record}
+          setRecord={setRecord}
+          editing={Editing}
+        />
+        <div className="w-full text-center">
+          <h2 className="alternate-font flex flex-col">
+            Ingreso neto
+            <span className="text-xl font-semibold">
+              {CalculatedNetIncome >= 0
+                ? `$ ${CalculatedNetIncome}`
+                : `- $ ${Math.abs(CalculatedNetIncome)}`}
+            </span>
+          </h2>
+        </div>
+        <div className="w-full flex justify-center items-center gap-2">
+          {Editing ? (
+            <>
               <Button
+                disabled={Loading}
                 type="button"
-                className="w-1/2"
-                onClick={() => setEditing(true)}
+                className="w-1/4"
+                variant={"destructive"}
+                onClick={() => {
+                  resetRecord();
+                  setEditing(false);
+                }}
               >
-                <PencilLine />
-                Editar
+                <CircleSlash />
+                Cancelar
               </Button>
-            )}
-          </div>
-        </form>
-      </Form>
+              <Button
+                disabled={Loading}
+                type="submit"
+                className="w-1/4"
+                onClick={onSubmit}
+              >
+                <FileCheck />
+                Confirmar
+              </Button>
+              <Button
+                disabled={Loading}
+                variant={"destructive"}
+                type="button"
+                onClick={handleDeleteClick}
+                className="flex justify-center items-center"
+              >
+                <Trash2 size={20} />
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              className="w-1/2"
+              onClick={() => setEditing(true)}
+            >
+              <PencilLine />
+              Editar
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

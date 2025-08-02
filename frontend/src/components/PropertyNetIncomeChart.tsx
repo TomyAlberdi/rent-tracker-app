@@ -55,9 +55,12 @@ const PropertyNetIncomeChart = ({
     const month = i + 1;
     const found = records.find((r) => r.month === month);
     if (found) {
-      found.totalExpenses = getTotalExpenses(found.expenses);
-      return found;
-    };
+      // Avoid mutating the original object
+      return {
+        ...found,
+        totalExpenses: getTotalExpenses(found.expenses),
+      };
+    }
     const base = records[0] || {};
     return {
       propertyId: propertyId,

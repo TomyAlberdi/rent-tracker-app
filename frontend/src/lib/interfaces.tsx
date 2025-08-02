@@ -56,6 +56,7 @@ export interface CreateRecordDTO {
 }
 
 export interface CreateExpenseDTO {
+  id?: number;
   title: string;
   description: string;
   amount: number;

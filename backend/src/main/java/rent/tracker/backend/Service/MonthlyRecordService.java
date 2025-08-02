@@ -52,6 +52,8 @@ public class MonthlyRecordService {
         if (exists.isEmpty()) {
             // Creating new record entity, calculating net income and saving it
             MonthlyRecord newRecord = MonthlyRecordMapper.toEntity(record, property);
+            // Validate input
+            validateRecordInput(record.getIncome(), record.getExpenses());
             newRecord.setNetIncome(calculateNetIncome(record.getIncome(), record.getExpenses()));
             MonthlyRecord savedRecord = monthlyRecordRepository.save(newRecord);
             // Saving expenses in the database (if not empty)
@@ -59,18 +61,25 @@ public class MonthlyRecordService {
             if (!record.getExpenses().isEmpty()) {
                 expenses = expenseService.attachExpenses(record.getExpenses(), savedRecord.getId());
             }
+            // Recalculate net income with saved expenses (in case amounts changed)
+            Double netIncome = calculateNetIncome(savedRecord.getIncome(), record.getExpenses());
+            savedRecord.setNetIncome(netIncome);
+            monthlyRecordRepository.save(savedRecord);
             return MonthlyRecordMapper.toDTO(savedRecord, expenses);
         }
         // If record exists
         MonthlyRecord monthlyRecord = exists.get();
-        // Calculating net income and saving it
-        monthlyRecord.setNetIncome(calculateNetIncome(monthlyRecord.getExpenses(), monthlyRecord.getIncome()));
+        // Validate input
+        validateRecordInput(record.getIncome(), record.getExpenses());
+        // Update income
+        monthlyRecord.setIncome(record.getIncome());
         MonthlyRecord savedRecord = monthlyRecordRepository.save(monthlyRecord);
-        // Saving expenses in the database (if not empty)
-        List<ExpenseDTO> expenses = new ArrayList<>();
-        if (!record.getExpenses().isEmpty()) {
-            expenses = expenseService.attachExpenses(record.getExpenses(), savedRecord.getId());
-        }
+        // Update expenses (replace all)
+        List<ExpenseDTO> expenses = expenseService.attachExpenses(record.getExpenses(), savedRecord.getId());
+        // Recalculate net income with new expenses
+        Double netIncome = calculateNetIncome(savedRecord.getIncome(), record.getExpenses());
+        savedRecord.setNetIncome(netIncome);
+        monthlyRecordRepository.save(savedRecord);
         return MonthlyRecordMapper.toDTO(savedRecord, expenses);
     }
     
@@ -84,19 +93,40 @@ public class MonthlyRecordService {
     }
     
     public Double calculateNetIncome(Double income, List<CreateExpenseDTO> expenses) {
+        if (income == null) income = 0.0;
+        if (expenses == null) expenses = new ArrayList<>();
         Double totalExpenses = 0.0;
         for (CreateExpenseDTO expense : expenses) {
-            totalExpenses = totalExpenses + expense.getAmount();
+            if (expense != null && expense.getAmount() != null) {
+                totalExpenses += expense.getAmount();
+            }
         }
         return income - totalExpenses;
     }
     
     public Double calculateNetIncome(List<Expense> expenses, Double income) {
+        if (income == null) income = 0.0;
+        if (expenses == null) expenses = new ArrayList<>();
         Double totalExpenses = 0.0;
         for (Expense expense : expenses) {
-            totalExpenses = totalExpenses + expense.getAmount();
+            if (expense != null && expense.getAmount() != null) {
+                totalExpenses += expense.getAmount();
+            }
         }
         return income - totalExpenses;
+    }
+
+    private void validateRecordInput(Double income, List<CreateExpenseDTO> expenses) {
+        if (income != null && income < 0) {
+            throw new IllegalArgumentException("Income cannot be negative");
+        }
+        if (expenses != null) {
+            for (CreateExpenseDTO expense : expenses) {
+                if (expense != null && expense.getAmount() != null && expense.getAmount() < 0) {
+                    throw new IllegalArgumentException("Expense amount cannot be negative");
+                }
+            }
+        }
     }
     
 }
