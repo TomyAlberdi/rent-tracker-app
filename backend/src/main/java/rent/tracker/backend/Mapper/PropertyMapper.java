@@ -1,7 +1,7 @@
 package rent.tracker.backend.Mapper;
 
-import rent.tracker.backend.DTO.CreatePropertyDTO;
-import rent.tracker.backend.DTO.PropertyDTO;
+import rent.tracker.backend.DTO.Property.CreatePropertyDTO;
+import rent.tracker.backend.DTO.Property.PropertyDTO;
 import rent.tracker.backend.Entity.Property;
 import rent.tracker.backend.Entity.Group;
 

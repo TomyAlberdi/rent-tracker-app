@@ -53,8 +53,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="custom-sidebar">
-        <NavGroup items={groups} />
-        <NavIndividual items={properties} />
+        {groups.length > 0 && <NavGroup items={groups} />}
+        {properties.length > 0 && <NavIndividual items={properties} />}
       </SidebarContent>
       <SidebarFooter>
         <AddProperty

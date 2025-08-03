@@ -1,46 +1,59 @@
-import GroupAdministration from "@/app/Pages/Group/GroupAdministration";
-import GroupMonthlyChart from "@/components/GroupMonthlyChart";
+import PropertyAdministration from "@/app/Pages/Property/PropertyAdministration";
+import PropertyNetIncomeChart from "@/components/PropertyNetIncomeChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGroupContext } from "@/context/useGroupContext";
-import { type GroupDTO } from "@/lib/interfaces";
+import { usePropertyContext } from "@/context/usePropertyContext";
+import { useRecordContext } from "@/context/useRecordContext";
+import { type PropertyDTO, type RecordDTO } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
   ChevronsLeft,
   ChevronsRight,
-  GroupIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const Group = () => {
+const Property = () => {
   const { id } = useParams();
-  const { getGroup } = useGroupContext();
-  const [GroupData, setGroupData] = useState<GroupDTO | null>(null);
-  const [GroupUpdated, setGroupUpdated] = useState(false);
+  const { getPropertyById } = usePropertyContext();
+  const { getRecords } = useRecordContext();
+
+  const [PropertyData, setPropertyData] = useState<PropertyDTO | null>(null);
+  const [PropertyRecords, setPropertyRecords] = useState<RecordDTO[]>([]);
+  const [PropertyUpdated, setPropertyUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
 
   useEffect(() => {
     setLoading(true);
-    getGroup(id as string)
+    getPropertyById(Number(id))
       .then((data) => {
-        setGroupData(data);
+        setPropertyData(data);
       })
       .finally(() => {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, GroupUpdated]);
+  }, [id, PropertyUpdated]);
+
+  useEffect(() => {
+    const fetchPropertyRecords = async () => {
+      if (!PropertyData || !RecordDataYear) return;
+      getRecords(PropertyData.id, RecordDataYear).then((records) => {
+        setPropertyRecords(records);
+      });
+    };
+    fetchPropertyRecords();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PropertyData, RecordDataYear]);
 
   const handlePreviousYear = () => {
     setRecordDataYear(RecordDataYear - 1);
@@ -61,7 +74,7 @@ const Group = () => {
       </div>
     );
 
-  if (!GroupData)
+  if (!PropertyData)
     return (
       <div className="page-full-h flex justify-center items-center">
         <Alert className="w-auto" variant={"destructive"}>
@@ -77,26 +90,14 @@ const Group = () => {
       <div className="h-full w-1/4 flex flex-col gap-4">
         <Card>
           <h2 className="alternate-font text-md font-medium flex gap-2">
-            <GroupIcon size={25} /> Grupo
+            <Building2 size={25} /> Propiedad
           </h2>
           <CardHeader>
-            <CardTitle className="text-2xl">{GroupData.name}</CardTitle>
-            {GroupData.description && (
-              <CardDescription>{GroupData.description}</CardDescription>
+            <CardTitle className="text-2xl">{PropertyData.name}</CardTitle>
+            {PropertyData.description && (
+              <CardDescription>{PropertyData.description}</CardDescription>
             )}
           </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            <h3 className="alternate-font text-md font-medium flex gap-2">
-              <Building2 size={22} /> Propiedades Incluidas
-            </h3>
-            <div className="flex flex-col gap-2">
-              {GroupData.properties?.map((property) => (
-                <Button key={property.id} variant={"outline"} className="text-sm" asChild>
-                  <Link to={`/property/${property.id}`}>{property.name}</Link>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
         </Card>
         <Card>
           <CardHeader>
@@ -104,10 +105,10 @@ const Group = () => {
               Administración
             </h2>
           </CardHeader>
-          <GroupAdministration
-            Group={GroupData}
-            GroupUpdated={GroupUpdated}
-            setGroupUpdated={setGroupUpdated}
+          <PropertyAdministration
+            Property={PropertyData}
+            PropertyUpdated={PropertyUpdated}
+            setPropertyUpdated={setPropertyUpdated}
           />
         </Card>
         <Card className="flex flex-row justify-between">
@@ -120,10 +121,15 @@ const Group = () => {
           </Button>
         </Card>
       </div>
-      <div className="h-full w-3/4 flex flex-col">
-        <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
+      <div className="h-full w-3/4 flex flex-col gap-4 pb-4">
+        <PropertyNetIncomeChart
+          year={RecordDataYear}
+          propertyName={PropertyData.name}
+          propertyId={PropertyData.id}
+          records={PropertyRecords}
+        />
       </div>
     </div>
   );
 };
-export default Group;
+export default Property;

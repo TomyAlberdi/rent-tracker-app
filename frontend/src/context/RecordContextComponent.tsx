@@ -1,5 +1,7 @@
 import { RecordContext, type RecordContextType } from "@/context/RecordContext";
+import type { CreateRecordDTO } from "@/lib/interfaces";
 import type { ReactNode } from "react";
+import { toast } from "sonner";
 
 interface RecordContextComponentProps {
   children: ReactNode;
@@ -8,11 +10,11 @@ interface RecordContextComponentProps {
 const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
   children,
 }) => {
-  const BASE_URL = "http://localhost:8081/record";
+  const BASE_URL = "http://localhost:8081";
 
   const getRecords = async (propertyId: number, year: number) => {
     try {
-      const url = `${BASE_URL}?propertyId=${propertyId}&year=${year}`;
+      const url = `${BASE_URL}/record?propertyId=${propertyId}&year=${year}`;
       const res = await fetch(url);
       if (!res.ok) {
         console.warn("No records found: ", res);
@@ -22,16 +24,63 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
       return data;
     } catch (err) {
       console.error("Failed to fetch records", err);
+      toast.error("No se pudieron recuperar los registros.", {
+        description: "Intentelo nuevamente más tarde.",
+      });
       return [];
+    }
+  };
+
+  const saveRecord = async (record: CreateRecordDTO) => {
+    try {
+      const response = await fetch(`${BASE_URL}/record`, {
+        method: "POST",
+        body: JSON.stringify(record),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to create record:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to create record", err);
+      toast.error("No se pudo crear el registro.", {
+        description: "Intentelo nuevamente más tarde.",
+      });
+    }
+  };
+
+  const deleteRecord = async (id: number) => {
+    try {
+      const response = await fetch(`${BASE_URL}/record/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn("Failed to delete record:", data);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to delete record", err);
+      toast.error("No se pudo eliminar el registro.", {
+        description: "Intentelo nuevamente más tarde.",
+      });
     }
   };
 
   const exportData: RecordContextType = {
     getRecords,
+    saveRecord,
+    deleteRecord,
   };
 
   return (
-    <RecordContext.Provider value={exportData}>{children}</RecordContext.Provider>
+    <RecordContext.Provider value={exportData}>
+      {children}
+    </RecordContext.Provider>
   );
 };
 

@@ -3,8 +3,9 @@ package rent.tracker.backend.Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import rent.tracker.backend.DTO.CreatePropertyDTO;
-import rent.tracker.backend.DTO.PropertyDTO;
+import org.springframework.transaction.annotation.Transactional;
+import rent.tracker.backend.DTO.Property.CreatePropertyDTO;
+import rent.tracker.backend.DTO.Property.PropertyDTO;
 import rent.tracker.backend.Entity.Property;
 import rent.tracker.backend.Entity.Group;
 import rent.tracker.backend.Mapper.PropertyMapper;
@@ -18,6 +19,7 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final GroupRepository groupRepository;
     
+    @Transactional
     public PropertyDTO createProperty(CreatePropertyDTO dto) {
         Group group = resolveGroup(dto.getGroupId());
         Property property = PropertyMapper.toEntity(dto, group);
@@ -30,6 +32,7 @@ public class PropertyService {
         return PropertyMapper.toDTO(property);
     }
     
+    @Transactional
     public PropertyDTO updateProperty(Long id, CreatePropertyDTO dto) {
         Property existing = propertyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Property not found with ID: " + id));
@@ -40,6 +43,7 @@ public class PropertyService {
         return PropertyMapper.toDTO(propertyRepository.save(existing));
     }
     
+    @Transactional
     public void deleteProperty(Long id) {
         if (!propertyRepository.existsById(id)) {
             throw new EntityNotFoundException("Property not found with ID: " + id);

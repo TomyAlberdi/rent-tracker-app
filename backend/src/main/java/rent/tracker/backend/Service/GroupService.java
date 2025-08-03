@@ -4,13 +4,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rent.tracker.backend.DTO.CreateGroupDTO;
-import rent.tracker.backend.DTO.GroupDTO;
-import rent.tracker.backend.DTO.LightGroupWithPropertiesDTO;
+import rent.tracker.backend.DTO.Group.CreateGroupDTO;
+import rent.tracker.backend.DTO.Group.GroupDTO;
+import rent.tracker.backend.DTO.Group.LightGroupWithPropertiesDTO;
 import rent.tracker.backend.Entity.Group;
 import rent.tracker.backend.Entity.Property;
 import rent.tracker.backend.Mapper.GroupMapper;
-import rent.tracker.backend.Mapper.PropertyMapper;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 import rent.tracker.backend.View.GroupDropdownView;
@@ -18,7 +17,6 @@ import rent.tracker.backend.View.IndividualPropertiesView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -43,6 +41,7 @@ public class GroupService {
         return returnGroups;
     }
     
+    @Transactional
     public GroupDTO createGroup(CreateGroupDTO dto) {
         Group group = GroupMapper.toEntity(dto);
         return GroupMapper.toDTO(groupRepository.save(group));
@@ -54,6 +53,7 @@ public class GroupService {
         return GroupMapper.toDTO(group);
     }
     
+    @Transactional
     public GroupDTO updateGroup(Long id, CreateGroupDTO dto) {
         Group existing = groupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found with ID: " + id));

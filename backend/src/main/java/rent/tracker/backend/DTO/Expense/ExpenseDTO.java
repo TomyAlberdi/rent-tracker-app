@@ -1,19 +1,21 @@
-package rent.tracker.backend.DTO;
+package rent.tracker.backend.DTO.Expense;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupDTO {
+public class ExpenseDTO {
+    
     private Long id;
-    private String name;
+    private Long recordId;
+    private String title;
     private String description;
-    private List<PropertyDTO> properties;
+    private Double amount;
+    private Integer share;
+    
 }

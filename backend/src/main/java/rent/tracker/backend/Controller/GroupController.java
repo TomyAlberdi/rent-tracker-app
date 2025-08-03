@@ -3,8 +3,8 @@ package rent.tracker.backend.Controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rent.tracker.backend.DTO.CreateGroupDTO;
-import rent.tracker.backend.DTO.GroupDTO;
+import rent.tracker.backend.DTO.Group.CreateGroupDTO;
+import rent.tracker.backend.DTO.Group.GroupDTO;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Service.GroupService;
 

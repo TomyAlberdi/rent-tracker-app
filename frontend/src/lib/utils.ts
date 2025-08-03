@@ -1,3 +1,4 @@
+import type { CreateExpenseDTO, ExpenseDTO } from "@/lib/interfaces";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -34,4 +35,8 @@ export function getMonthName(month: number) {
     default:
       return "";
   }
+}
+
+export function getTotalExpenses(expenses: ExpenseDTO[] | CreateExpenseDTO[]) {
+  return expenses.reduce((acc, expense) => acc + expense.amount, 0);
 }

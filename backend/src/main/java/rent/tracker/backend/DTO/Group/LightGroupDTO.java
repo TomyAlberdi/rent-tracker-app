@@ -1,4 +1,4 @@
-package rent.tracker.backend.DTO;
+package rent.tracker.backend.DTO.Group;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateGroupDTO {
+public class LightGroupDTO {
+    private Long id;
     private String name;
-    private String description;
 }

@@ -1,7 +1,7 @@
 package rent.tracker.backend.Mapper;
 
-import rent.tracker.backend.DTO.CreateGroupDTO;
-import rent.tracker.backend.DTO.GroupDTO;
+import rent.tracker.backend.DTO.Group.CreateGroupDTO;
+import rent.tracker.backend.DTO.Group.GroupDTO;
 import rent.tracker.backend.Entity.Group;
 
 import java.util.stream.Collectors;

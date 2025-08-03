@@ -1,4 +1,4 @@
-package rent.tracker.backend.DTO;
+package rent.tracker.backend.DTO.Property;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
