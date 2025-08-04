@@ -3,37 +3,34 @@ package rent.tracker.backend.Controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rent.tracker.backend.DTO.MonthlyRecord.CreateRecordDTO;
-import rent.tracker.backend.DTO.MonthlyRecord.RecordDTO;
-import rent.tracker.backend.Entity.MonthlyRecord;
-import rent.tracker.backend.Mapper.MonthlyRecordMapper;
-import rent.tracker.backend.Service.MonthlyRecordService;
-
-import java.util.List;
+import rent.tracker.backend.DTO.Record.CreateRecordDTO;
+import rent.tracker.backend.Model.Property;
+import rent.tracker.backend.Service.RecordService;
 
 @RestController
 @RequestMapping("/record")
 @RequiredArgsConstructor
 public class MonthlyRecordController {
     
-    private final MonthlyRecordService monthlyRecordService;
+    private final RecordService recordService;
     
     @GetMapping
     public ResponseEntity<?> getByPropertyAndYear(
-            @RequestParam Long propertyId,
+            @RequestParam Property.PropertyType type,
+            @RequestParam String parentId,
             @RequestParam int year
     ) {
-        return ResponseEntity.ok(monthlyRecordService.getByPropertyAndYear(propertyId, year));
+        return ResponseEntity.ok(recordService.getByParentIdAndYear(type, parentId, year));
     }
 
     @PostMapping
     public ResponseEntity<?> register(@RequestBody CreateRecordDTO record) {
-        return ResponseEntity.ok(monthlyRecordService.register(record));
+        return ResponseEntity.ok(recordService.save(record));
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        monthlyRecordService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable String id) {
+        recordService.delete(id);
         return ResponseEntity.ok().build();
     }
     
