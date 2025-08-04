@@ -75,7 +75,7 @@ public class RecordService {
         Double totalIncome = sumAmounts(Transaction.TransactionType.INCOME, record.getTransactions());
         Double totalExpense = sumAmounts(Transaction.TransactionType.EXPENSE, record.getTransactions());
         Double netIncome = totalIncome - totalExpense;
-        record.setTotalIncome(netIncome);
+        record.setTotalIncome(totalIncome);
         record.setTotalExpense(totalExpense);
         record.setNetIncome(netIncome);
     }

@@ -16,7 +16,11 @@ public class PropertyMapper {
         property.setName(dto.getName());
         property.setDescription(dto.getDescription());
         property.setType(dto.getType());
-        property.setGroupId(dto.getGroupId());
+        if (dto.getType().equals(Property.PropertyType.GROUPED)) {
+            property.setGroupId(dto.getGroupId());
+        } else {
+            property.setGroupId(null);
+        }
     }
     
 }

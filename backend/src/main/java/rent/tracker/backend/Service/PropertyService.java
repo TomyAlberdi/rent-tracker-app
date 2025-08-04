@@ -17,7 +17,7 @@ public class PropertyService {
     private final GroupRepository groupRepository;
 
     public Property createProperty(CreatePropertyDTO dto) {
-        if (!groupRepository.existsById(dto.getGroupId())) {
+        if (dto.getGroupId() != null && !groupRepository.existsById(dto.getGroupId())) {
             throw new ResourceNotFoundException("Group not found with ID: " + dto.getGroupId());
         }
         Property property = PropertyMapper.toEntity(dto);
@@ -32,7 +32,7 @@ public class PropertyService {
     public Property updateProperty(String id, CreatePropertyDTO dto) {
         Property existing = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found with ID: " + id));
-        if (!groupRepository.existsById(dto.getGroupId())) {
+        if (dto.getGroupId() != null && !groupRepository.existsById(dto.getGroupId())) {
             throw new ResourceNotFoundException("Group not found with ID: " + dto.getGroupId());
         }
         PropertyMapper.updateFromDTO(existing, dto);

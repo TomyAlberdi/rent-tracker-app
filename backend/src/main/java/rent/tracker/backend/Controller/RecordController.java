@@ -10,7 +10,7 @@ import rent.tracker.backend.Service.RecordService;
 @RestController
 @RequestMapping("/record")
 @RequiredArgsConstructor
-public class MonthlyRecordController {
+public class RecordController {
     
     private final RecordService recordService;
     
@@ -20,6 +20,7 @@ public class MonthlyRecordController {
             @RequestParam String parentId,
             @RequestParam int year
     ) {
+        //TODO: make return by GROUPED also return all records of properties with the group ID
         return ResponseEntity.ok(recordService.getByParentIdAndYear(type, parentId, year));
     }
 
