@@ -1,4 +1,3 @@
-import AddRecord from "@/components/AddRecord";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,16 +18,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { RecordDTO } from "@/lib/interfaces";
-import { getMonthName, getTotalExpenses } from "@/lib/utils";
+import type { PropertyType, Record } from "@/lib/interfaces";
+import { getMonthName } from "@/lib/utils";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
-interface PropertyNetIncomeChartProps {
+interface RecordChartProps {
   year: number;
-  propertyId: number;
-  propertyName: string;
-  records: RecordDTO[];
+  parentName: string;
+  parentId: string;
+  parentType: PropertyType,
+  records: Record[];
 }
 
 const chartConfig = {
@@ -42,12 +42,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const PropertyNetIncomeChart = ({
+const RecordChart = ({
   year,
-  propertyId,
-  propertyName,
+  parentId,
+  parentName,
+  parentType,
   records,
-}: PropertyNetIncomeChartProps) => {
+}: RecordChartProps) => {
   const [DialogOpen, setDialogOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
@@ -55,24 +56,21 @@ const PropertyNetIncomeChart = ({
     const month = i + 1;
     const found = records.find((r) => r.month === month);
     if (found) {
-      // Avoid mutating the original object
       return {
         ...found,
-        totalExpenses: getTotalExpenses(found.expenses),
+        parentName: parentName,
       };
     }
-    const base = records[0] || {};
     return {
-      propertyId: propertyId,
-      propertyName: propertyName,
-      groupId: base.groupId || null,
-      groupName: base.groupName || null,
+      type: parentType,
+      parentId: parentId,
+      parentName: parentName,
       month,
       year,
-      income: 0,
-      netIncome: 0,
-      expenses: [],
+      transactions: [],
+      totalIncome: 0,
       totalExpenses: 0,
+      netIncome: 0,
     };
   });
 
@@ -106,7 +104,7 @@ const PropertyNetIncomeChart = ({
     <>
       <Card>
         <CardHeader>
-          <CardTitle>{propertyName}</CardTitle>
+          <CardTitle>{parentName}</CardTitle>
           <CardDescription>{year}</CardDescription>
           <CardContent>
             <ChartContainer config={chartConfig}>
@@ -152,14 +150,17 @@ const PropertyNetIncomeChart = ({
                 className="w-full mt-4 cursor-default"
                 variant={"outline"}
               >
-                {propertyName}
+                {parentName}
               </Button>
             </DialogTitle>
           </DialogHeader>
-          {selectedRecord && <AddRecord record={selectedRecord} />}
+          {/* 
+            TODO: Uncomment when addrecord component is fixed
+            {selectedRecord && <AddRecord record={selectedRecord} />} 
+          */}
         </DialogContent>
       </Dialog>
     </>
   );
 };
-export default PropertyNetIncomeChart;
+export default RecordChart;

@@ -43,6 +43,7 @@ export interface Record {
 }
 
 export interface CreateRecordDTO {
+  id?: string,
   type: PropertyType;
   parentId: string;
   month: number;

@@ -1,4 +1,4 @@
-import PropertyNetIncomeChart from "@/components/PropertyNetIncomeChart";
+import RecordChart from "@/components/RecordChart";
 import { useRecordContext } from "@/context/useRecordContext";
 import type { GroupDTO, RecordDTO } from "@/lib/interfaces";
 import { useEffect, useState } from "react";
@@ -8,9 +8,7 @@ interface GroupMonthlyTableProps {
   year: number;
 }
 
-//TODO: change multiple group property record charts to a single group chart of combined record values by month
-// Differentiate between each property record values by color
-// Use new backend endpoints
+//TODO: update to new interfaces
 const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
   const { getRecords } = useRecordContext();
 
@@ -45,7 +43,7 @@ const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
   return (
     <div className="flex flex-col gap-4 pb-4">
       {group.properties?.map((property) => (
-        <PropertyNetIncomeChart
+        <RecordChart
           key={property.id}
           year={year}
           propertyName={property.name}

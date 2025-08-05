@@ -10,6 +10,7 @@ interface RecordExpensesProps {
   editing: boolean;
 }
 
+//TODO: update to new interfaces
 const RecordExpenses = ({
   Record,
   setRecord,

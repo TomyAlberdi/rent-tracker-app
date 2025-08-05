@@ -1,5 +1,5 @@
 import GroupAdministration from "@/app/Pages/Group/GroupAdministration";
-import GroupMonthlyChart from "@/components/GroupMonthlyChart";
+import RecordChart from "@/components/RecordChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupContext } from "@/context/useGroupContext";
-import { type Group } from "@/lib/interfaces";
+import { useRecordContext } from "@/context/useRecordContext";
+import type { Group, Record } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -25,7 +26,10 @@ import { Link, useParams } from "react-router-dom";
 const Group = () => {
   const { id } = useParams();
   const { getGroup } = useGroupContext();
+  const { getRecords } = useRecordContext();
+
   const [GroupData, setGroupData] = useState<Group | null>(null);
+  const [GroupRecords, setGroupRecords] = useState<Record[]>([]);
   const [GroupUpdated, setGroupUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
@@ -41,6 +45,17 @@ const Group = () => {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, GroupUpdated]);
+
+  useEffect(() => {
+    const fetchGroupRecords = async () => {
+      if (!GroupData || !RecordDataYear) return;
+      getRecords("GROUPED", GroupData.id, RecordDataYear).then((records) => {
+        setGroupRecords(records);
+      });
+    };
+    fetchGroupRecords();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [GroupData, RecordDataYear]);
 
   const handlePreviousYear = () => {
     setRecordDataYear(RecordDataYear - 1);
@@ -91,7 +106,12 @@ const Group = () => {
             </h3>
             <div className="flex flex-col gap-2">
               {GroupData.properties?.map((property) => (
-                <Button key={property.id} variant={"outline"} className="text-sm" asChild>
+                <Button
+                  key={property.id}
+                  variant={"outline"}
+                  className="text-sm"
+                  asChild
+                >
                   <Link to={`/property/${property.id}`}>{property.name}</Link>
                 </Button>
               ))}
@@ -121,7 +141,17 @@ const Group = () => {
         </Card>
       </div>
       <div className="h-full w-3/4 flex flex-col">
-        <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
+        <RecordChart
+          year={RecordDataYear}
+          parentName={GroupData.name}
+          parentId={GroupData.id}
+          parentType={"GROUPED"}
+          records={GroupRecords}
+        />
+        {/* 
+          TODO: Uncomment when monthly chart is fixed
+          <GroupMonthlyChart group={GroupData} year={RecordDataYear} /> 
+        */}
       </div>
     </div>
   );

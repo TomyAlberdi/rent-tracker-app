@@ -1,5 +1,5 @@
 import PropertyAdministration from "@/app/Pages/Property/PropertyAdministration";
-import PropertyNetIncomeChart from "@/components/PropertyNetIncomeChart";
+import RecordChart from "@/components/RecordChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePropertyContext } from "@/context/usePropertyContext";
 import { useRecordContext } from "@/context/useRecordContext";
-import { type Property, type RecordDTO } from "@/lib/interfaces";
+import type { Property, Record } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -27,7 +27,7 @@ const Property = () => {
   const { getRecords } = useRecordContext();
 
   const [PropertyData, setPropertyData] = useState<Property | null>(null);
-  const [PropertyRecords, setPropertyRecords] = useState<RecordDTO[]>([]);
+  const [PropertyRecords, setPropertyRecords] = useState<Record[]>([]);
   const [PropertyUpdated, setPropertyUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
@@ -47,7 +47,7 @@ const Property = () => {
   useEffect(() => {
     const fetchPropertyRecords = async () => {
       if (!PropertyData || !RecordDataYear) return;
-      getRecords(PropertyData.id, RecordDataYear).then((records) => {
+      getRecords("INDIVIDUAL", PropertyData.id, RecordDataYear).then((records) => {
         setPropertyRecords(records);
       });
     };
@@ -122,10 +122,11 @@ const Property = () => {
         </Card>
       </div>
       <div className="h-full w-3/4 flex flex-col gap-4 pb-4">
-        <PropertyNetIncomeChart
+        <RecordChart
           year={RecordDataYear}
-          propertyName={PropertyData.name}
-          propertyId={PropertyData.id}
+          parentName={PropertyData.name}
+          parentId={PropertyData.id}
+          parentType={"INDIVIDUAL"}
           records={PropertyRecords}
         />
       </div>
