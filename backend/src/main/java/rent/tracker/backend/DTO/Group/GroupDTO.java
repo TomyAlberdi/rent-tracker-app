@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rent.tracker.backend.DTO.Property.PropertyDTO;
+import rent.tracker.backend.Model.Property;
 
 import java.util.List;
 
@@ -13,8 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupDTO {
-    private Long id;
+    private String id;
     private String name;
     private String description;
-    private List<PropertyDTO> properties;
+    private List<Property> properties;
+    
 }

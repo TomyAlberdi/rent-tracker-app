@@ -2,24 +2,20 @@ package rent.tracker.backend.Mapper;
 
 import rent.tracker.backend.DTO.Group.CreateGroupDTO;
 import rent.tracker.backend.DTO.Group.GroupDTO;
-import rent.tracker.backend.Entity.Group;
+import rent.tracker.backend.Model.Group;
+import rent.tracker.backend.Model.Property;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class GroupMapper {
     
-    public static GroupDTO toDTO(Group pg) {
+    public static GroupDTO toDTO(Group pg, List<Property> properties) {
         GroupDTO dto = new GroupDTO();
         dto.setId(pg.getId());
         dto.setName(pg.getName());
         dto.setDescription(pg.getDescription());
-        if (pg.getProperties() != null) {
-            dto.setProperties(
-                    pg.getProperties().stream()
-                            .map(PropertyMapper::toDTO)
-                            .collect(Collectors.toList())
-            );
-        }
+        dto.setProperties(properties);
         return dto;
     }
     

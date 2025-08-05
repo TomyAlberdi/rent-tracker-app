@@ -1,4 +1,4 @@
-package rent.tracker.backend.DTO.Expense;
+package rent.tracker.backend.Model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,15 +7,18 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ExpenseDTO {
+@AllArgsConstructor
+public class Transaction {
     
-    private Long id;
-    private Long recordId;
     private String title;
     private String description;
     private Double amount;
-    private Integer share;
+    private TransactionType type;
+    
+    public enum TransactionType {
+        INCOME,
+        EXPENSE
+    }
     
 }

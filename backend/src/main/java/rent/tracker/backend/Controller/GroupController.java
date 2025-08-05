@@ -16,18 +16,13 @@ public class GroupController {
     private final GroupService groupService;
     private final GroupRepository groupRepository;
     
-    @GetMapping("/list/full")
-    public ResponseEntity<?> getAllGroupsWithProperties() {
-        return ResponseEntity.ok(groupService.getAllGroupsWithProperties());
-    }
-    
-    @GetMapping("/list/light")
-    public ResponseEntity<?> getDropdownGroups() {
-        return ResponseEntity.ok(groupRepository.findAllBy());
+    @GetMapping("/list")
+    public ResponseEntity<?> getLightGroups() {
+        return ResponseEntity.ok(groupService.getLightGroups());
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> getGroupById(@PathVariable Long id) {
+    public ResponseEntity<?> getGroupById(@PathVariable String id) {
         GroupDTO groupDTO = groupService.getGroupById(id);
         return ResponseEntity.ok(groupDTO);
     }
@@ -39,15 +34,14 @@ public class GroupController {
     
     @PutMapping("/{id}")
     public ResponseEntity<?> updateGroup(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody CreateGroupDTO dto
     ) {
-        GroupDTO group = groupService.updateGroup(id, dto);
-        return ResponseEntity.ok(group);
+        return ResponseEntity.ok(groupService.updateGroup(id, dto));
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteGroup(@PathVariable Long id) {
+    public ResponseEntity<?> deleteGroup(@PathVariable String id) {
         groupService.deleteGroup(id);
         return ResponseEntity.ok().build();
     }

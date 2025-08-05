@@ -1,15 +1,12 @@
 package rent.tracker.backend.Repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import rent.tracker.backend.Entity.Property;
-import rent.tracker.backend.View.IndividualPropertiesView;
-
+import rent.tracker.backend.Model.Property;
 import java.util.List;
 
 @Repository
-public interface PropertyRepository extends JpaRepository<Property, Long> {
-    List<Property> findByGroupId(Long groupId);
-    List<IndividualPropertiesView> findByTypeAndGroupIsNull(Property.PropertyType type);
-    List<IndividualPropertiesView> findLightByGroupId(Long groupId);
+public interface PropertyRepository extends MongoRepository<Property, String> {
+    List<Property> findByGroupId(String groupId);
+    List<Property> findByType(Property.PropertyType type);
 }
