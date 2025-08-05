@@ -11,7 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePropertyContext } from "@/context/usePropertyContext";
 import { useRecordContext } from "@/context/useRecordContext";
-import { type PropertyDTO, type RecordDTO } from "@/lib/interfaces";
+import { type Property, type RecordDTO } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -26,7 +26,7 @@ const Property = () => {
   const { getPropertyById } = usePropertyContext();
   const { getRecords } = useRecordContext();
 
-  const [PropertyData, setPropertyData] = useState<PropertyDTO | null>(null);
+  const [PropertyData, setPropertyData] = useState<Property | null>(null);
   const [PropertyRecords, setPropertyRecords] = useState<RecordDTO[]>([]);
   const [PropertyUpdated, setPropertyUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const Property = () => {
 
   useEffect(() => {
     setLoading(true);
-    getPropertyById(Number(id))
+    getPropertyById(id as string)
       .then((data) => {
         setPropertyData(data);
       })

@@ -2,6 +2,7 @@ import {
   PropertyContext,
   type PropertyContextType,
 } from "@/context/PropertyContext";
+import type { CreatePropertyDTO } from "@/lib/interfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -14,7 +15,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
 }) => {
   const BASE_URL = "http://localhost:8081/property";
 
-  const getIndividualProperties = async () => {
+  const getProperties = async () => {
     try {
       const res = await fetch(`${BASE_URL}`);
       if (!res.ok) {
@@ -31,7 +32,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
     }
   };
 
-  const getPropertyById = async (id: number) => {
+  const getPropertyById = async (id: string) => {
     try {
       const res = await fetch(`${BASE_URL}/${id}`);
       if (!res.ok) {
@@ -48,16 +49,11 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
     }
   };
 
-  const createProperty = async (
-    name: string,
-    type: string,
-    description?: string,
-    groupId?: number | null
-  ) => {
+  const createProperty = async (property: CreatePropertyDTO) => {
     try {
       const response = await fetch(`${BASE_URL}`, {
         method: "POST",
-        body: JSON.stringify({ name, type, description, groupId }),
+        body: JSON.stringify(property),
         headers: {
           "Content-Type": "application/json",
         },
@@ -74,17 +70,11 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
     }
   };
 
-  const updateProperty = async (
-    id: number,
-    name: string,
-    type: string,
-    description?: string,
-    groupId?: number | null
-  ) => {
+  const updateProperty = async (id: string, property: CreatePropertyDTO) => {
     try {
       const response = await fetch(`${BASE_URL}/${id}`, {
         method: "PUT",
-        body: JSON.stringify({ name, type, description, groupId }),
+        body: JSON.stringify(property),
         headers: {
           "Content-Type": "application/json",
         },
@@ -101,7 +91,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
     }
   };
 
-  const deleteProperty = async (id: number) => {
+  const deleteProperty = async (id: string) => {
     try {
       const response = await fetch(`${BASE_URL}/${id}`, {
         method: "DELETE",
@@ -118,7 +108,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
   };
 
   const exportData: PropertyContextType = {
-    getIndividualProperties,
+    getProperties,
     getPropertyById,
     createProperty,
     updateProperty,

@@ -70,7 +70,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
   };
 
   const updateGroup = async (
-    groupId: number,
+    groupId: string,
     group: CreateGroupDTO
   ) => {
     try {

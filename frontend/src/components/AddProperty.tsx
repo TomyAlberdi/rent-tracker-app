@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useGroupContext } from "@/context/useGroupContext";
 import { usePropertyContext } from "@/context/usePropertyContext";
-import type { IdNameItem, PropertyDTO } from "@/lib/interfaces";
+import type { CreatePropertyDTO, IdNameItem, Property } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus, PencilLine } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,7 +34,7 @@ import z from "zod";
 interface AddPropertyProps {
   PropertyCreated?: boolean;
   setPropertyCreated?: React.Dispatch<React.SetStateAction<boolean>>;
-  DefaultProperty?: PropertyDTO;
+  DefaultProperty?: Property;
 }
 
 const formSchema = z.object({
@@ -71,26 +71,21 @@ const AddProperty = ({
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
     setLoading(true);
+    const data: CreatePropertyDTO = {
+      name: values.name,
+      description: values.description || null,
+      type: values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
+      groupId: values.groupId !== "none" ? Number(values.groupId) : null,
+    };
     if (DefaultProperty) {
-      updateProperty(
-        DefaultProperty.id,
-        values.name,
-        values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
-        values.description,
-        values.groupId !== "none" ? Number(values.groupId) : null
-      ).finally(() => {
+      updateProperty(DefaultProperty.id, data).finally(() => {
         form.reset();
         setLoading(false);
         window.location.reload();
         setDialogOpen(false);
       });
     } else {
-      createProperty(
-        values.name,
-        values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
-        values.description,
-        values.groupId !== "none" ? Number(values.groupId) : null
-      ).finally(() => {
+      createProperty(data).finally(() => {
         form.reset();
         setLoading(false);
         if (setPropertyCreated) {

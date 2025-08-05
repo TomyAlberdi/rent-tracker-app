@@ -1,23 +1,15 @@
-import type { IdNameItem, PropertyDTO } from "@/lib/interfaces";
+import type { CreatePropertyDTO, Property } from "@/lib/interfaces";
 import { createContext } from "react";
 
 export interface PropertyContextType {
-  getIndividualProperties: () => Promise<IdNameItem[]>;
-  getPropertyById: (id: number) => Promise<PropertyDTO | null>;
-  createProperty: (
-    name: string,
-    type: string,
-    description?: string,
-    groupId?: number | null
-  ) => Promise<void>;
+  getProperties: () => Promise<Property[]>;
+  getPropertyById: (id: string) => Promise<Property | null>;
+  createProperty: (property: CreatePropertyDTO) => Promise<void>;
   updateProperty: (
-    id: number,
-    name: string,
-    type: string,
-    description?: string,
-    groupId?: number | null
+    groupId: string,
+    property: CreatePropertyDTO
   ) => Promise<void>;
-  deleteProperty: (id: number) => Promise<void>;
+  deleteProperty: (id: string) => Promise<void>;
 }
 
 export const PropertyContext = createContext<PropertyContextType | null>(null);

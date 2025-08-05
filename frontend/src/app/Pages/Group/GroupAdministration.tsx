@@ -43,7 +43,6 @@ const GroupAdministration = ({
       .finally(() => {
         setLoadingDelete(false);
         navigate("/");
-        window.location.reload();
       });
   };
 
