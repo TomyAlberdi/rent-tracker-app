@@ -1,64 +1,62 @@
 export interface IdNameItem {
-  id: number;
+  id: string;
   name: string;
 }
 
-export interface PropertyDTO {
-  id: number;
+export interface Property {
+  id: string;
   name: string;
   description: string | null;
-  type: string;
+  type: PropertyType;
   groupId: number | null;
 }
 
-export interface GroupDTO {
-  id: number;
+export interface CreatePropertyDTO {
   name: string;
   description: string | null;
-  properties?: PropertyDTO[];
-}
-
-export interface GroupListingItem {
-  id: number;
-  name: string;
-  properties?: IdNameItem[];
-}
-
-export interface RecordDTO {
-  id?: number;
-  propertyId: number;
-  propertyName: string;
+  type: PropertyType;
   groupId: number | null;
-  groupName: string | null;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  description: string | null;
+  properties: Property[];
+}
+
+export interface CreateGroupDTO {
+  name: string;
+  description: string | null;
+}
+
+export interface Record {
+  id: string;
+  type: PropertyType;
+  parentId: string;
   month: number;
   year: number;
-  income: number;
+  transactions: Transaction[];
+  totalIncome: number;
+  totalExpenses: number;
   netIncome: number;
-  expenses: ExpenseDTO[];
-  totalExpenses?: number;
-}
-
-export interface ExpenseDTO {
-  id: number;
-  recordId: number;
-  title: string;
-  description: string;
-  amount: number;
-  share?: number;
 }
 
 export interface CreateRecordDTO {
-  propertyId: number;
+  type: PropertyType;
+  parentId: string;
   month: number;
   year: number;
-  income: number;
-  expenses: CreateExpenseDTO[];
+  transactions: Transaction[];
 }
 
-export interface CreateExpenseDTO {
-  id?: number;
+export interface Transaction {
   title: string;
-  description: string;
+  description: string | null;
   amount: number;
-  share?: number;
+  type: ExpenseType;
 }
+
+export type PropertyType = 'INDIVIDUAL' | 'GROUPED';
+
+export type ExpenseType = 'INCOME' | 'EXPENSE';
