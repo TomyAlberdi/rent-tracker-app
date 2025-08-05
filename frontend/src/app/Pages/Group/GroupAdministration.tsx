@@ -2,7 +2,7 @@ import CreateGroup from "@/components/CreateGroup";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import { useGroupContext } from "@/context/useGroupContext";
-import type { GroupDTO } from "@/lib/interfaces";
+import type { Group } from "@/lib/interfaces";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { toast } from "sonner";
 interface GroupAdministrationProps {
   GroupUpdated: boolean;
   setGroupUpdated: React.Dispatch<React.SetStateAction<boolean>>;
-  Group: GroupDTO;
+  Group: Group;
 }
 
 const GroupAdministration = ({

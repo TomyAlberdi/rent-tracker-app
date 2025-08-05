@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useGroupContext } from "@/context/useGroupContext";
-import type { GroupDTO } from "@/lib/interfaces";
+import type { CreateGroupDTO, Group } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus, PencilLine } from "lucide-react";
 import { useState } from "react";
@@ -27,7 +27,7 @@ import { z } from "zod";
 interface CreateGroupProps {
   GroupCreated?: boolean;
   setGroupCreated?: React.Dispatch<React.SetStateAction<boolean>>;
-  DefaultGroup?: GroupDTO;
+  DefaultGroup?: Group;
 }
 
 const formSchema = z.object({
@@ -35,8 +35,11 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-
-const CreateGroup = ({ GroupCreated, setGroupCreated, DefaultGroup }: CreateGroupProps) => {
+const CreateGroup = ({
+  GroupCreated,
+  setGroupCreated,
+  DefaultGroup,
+}: CreateGroupProps) => {
   const { createGroup, updateGroup } = useGroupContext();
   const [DialogOpen, setDialogOpen] = useState(false);
   const [Loading, setLoading] = useState(false);
@@ -51,15 +54,19 @@ const CreateGroup = ({ GroupCreated, setGroupCreated, DefaultGroup }: CreateGrou
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setLoading(true);
+    const data: CreateGroupDTO = {
+      name: values.name,
+      description: values.description || null,
+    };
     if (DefaultGroup) {
-      updateGroup(DefaultGroup.id, values.name, values.description).finally(() => {
+      updateGroup(DefaultGroup.id, data).finally(() => {
         form.reset();
         setLoading(false);
         window.location.reload();
         setDialogOpen(false);
       });
     } else {
-      createGroup(values.name, values.description).finally(() => {
+      createGroup(data).finally(() => {
         form.reset();
         setLoading(false);
         if (setGroupCreated) {
@@ -87,9 +94,7 @@ const CreateGroup = ({ GroupCreated, setGroupCreated, DefaultGroup }: CreateGrou
       </DialogTrigger>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>
-            {DefaultGroup ? "Editar" : "Crear"} Grupo
-          </DialogTitle>
+          <DialogTitle>{DefaultGroup ? "Editar" : "Crear"} Grupo</DialogTitle>
           <DialogDescription>
             Crear un grupo para asociar 2 o más propiedades.
           </DialogDescription>

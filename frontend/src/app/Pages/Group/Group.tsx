@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupContext } from "@/context/useGroupContext";
-import { type GroupDTO } from "@/lib/interfaces";
+import { type Group } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -25,7 +25,7 @@ import { Link, useParams } from "react-router-dom";
 const Group = () => {
   const { id } = useParams();
   const { getGroup } = useGroupContext();
-  const [GroupData, setGroupData] = useState<GroupDTO | null>(null);
+  const [GroupData, setGroupData] = useState<Group | null>(null);
   const [GroupUpdated, setGroupUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);

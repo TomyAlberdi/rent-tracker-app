@@ -1,4 +1,5 @@
 import { GroupContext, type GroupContextType } from "@/context/GroupContext";
+import type { CreateGroupDTO } from "@/lib/interfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -13,25 +14,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const getDropdownGroups = async () => {
     try {
-      const url = `${BASE_URL}/list/light`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        toast.error("Ocurrió un error al obtener los grupos");
-        console.warn("No groups found: ", res);
-        return [];
-      }
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      console.error("Failed to fetch groups", err);
-      toast.error("Ocurrió un error al obtener los grupos");
-      return [];
-    }
-  };
-
-  const getGroupsWithProperties = async () => {
-    try {
-      const url = `${BASE_URL}/list/full`;
+      const url = `${BASE_URL}/list`;
       const res = await fetch(url);
       if (!res.ok) {
         toast.error("Ocurrió un error al obtener los grupos");
@@ -65,11 +48,11 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     }
   };
 
-  const createGroup = async (name: string, description?: string) => {
+  const createGroup = async (group: CreateGroupDTO) => {
     try {
       const response = await fetch(`${BASE_URL}`, {
         method: "POST",
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify(group),
         headers: {
           "Content-Type": "application/json",
         },
@@ -88,13 +71,12 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const updateGroup = async (
     groupId: number,
-    name: string,
-    description?: string
+    group: CreateGroupDTO
   ) => {
     try {
       const response = await fetch(`${BASE_URL}/${groupId}`, {
         method: "PUT",
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify(group),
         headers: {
           "Content-Type": "application/json",
         },
@@ -129,7 +111,6 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const exportData: GroupContextType = {
     getDropdownGroups,
-    getGroupsWithProperties,
     getGroup,
     createGroup,
     updateGroup,

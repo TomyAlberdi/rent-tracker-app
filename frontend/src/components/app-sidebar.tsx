@@ -13,22 +13,22 @@ import {
 } from "@/components/ui/sidebar";
 import { useGroupContext } from "@/context/useGroupContext";
 import { usePropertyContext } from "@/context/usePropertyContext";
-import type { GroupListingItem, IdNameItem } from "@/lib/interfaces";
+import type { IdNameItem } from "@/lib/interfaces";
 import { CircleDollarSign } from "lucide-react";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { getGroupsWithProperties } = useGroupContext();
+  const { getDropdownGroups } = useGroupContext();
   const { getIndividualProperties } = usePropertyContext();
-  const [groups, setGroups] = useState<GroupListingItem[]>([]);
+  const [groups, setGroups] = useState<IdNameItem[]>([]);
   const [properties, setProperties] = useState<IdNameItem[]>([]);
   const [GroupCreated, setGroupCreated] = useState(false);
   const [PropertyCreated, setPropertyCreated] = useState(false);
 
   useEffect(() => {
-    getGroupsWithProperties().then((data) => setGroups(data));
+    getDropdownGroups().then((data) => setGroups(data));
     getIndividualProperties().then((data) => setProperties(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [GroupCreated, PropertyCreated]);

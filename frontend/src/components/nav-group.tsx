@@ -1,18 +1,16 @@
 "use client";
-import {
-  Collapsible
-} from "@/components/ui/collapsible";
+import { Collapsible } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import type { GroupListingItem } from "@/lib/interfaces";
+import type { IdNameItem } from "@/lib/interfaces";
 import { useNavigate } from "react-router-dom";
 
-export function NavGroup({ items }: { items: GroupListingItem[] }) {
+export function NavGroup({ items }: { items: IdNameItem[] }) {
   const navigate = useNavigate();
 
   return (
@@ -29,7 +27,7 @@ export function NavGroup({ items }: { items: GroupListingItem[] }) {
           >
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.name}>
-                  <span className="text-sm p-2">{item.name}</span>
+                <span className="text-sm p-2">{item.name}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </Collapsible>

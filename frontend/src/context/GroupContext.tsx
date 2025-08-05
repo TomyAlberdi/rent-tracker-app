@@ -1,12 +1,11 @@
-import type { GroupDTO, GroupListingItem, IdNameItem } from "@/lib/interfaces";
+import type { CreateGroupDTO, Group, IdNameItem } from "@/lib/interfaces";
 import { createContext } from "react";
 
 export interface GroupContextType {
   getDropdownGroups: () => Promise<IdNameItem[]>;
-  getGroupsWithProperties: () => Promise<GroupListingItem[]>;
-  getGroup: (groupId: string) => Promise<GroupDTO | null>;
-  createGroup: (name: string, description?: string) => Promise<void>;
-  updateGroup: (groupId: number, name: string, description?: string) => Promise<void>;
+  getGroup: (groupId: string) => Promise<Group | null>;
+  createGroup: (group: CreateGroupDTO) => Promise<void>;
+  updateGroup: (groupId: string, group: CreateGroupDTO) => Promise<void>;
   deleteGroup: (groupId: string) => Promise<void>;
 }
 
