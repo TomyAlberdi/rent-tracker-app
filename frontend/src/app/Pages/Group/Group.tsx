@@ -1,4 +1,5 @@
 import GroupAdministration from "@/app/Pages/Group/GroupAdministration";
+import GroupMonthlyChart from "@/components/GroupMonthlyChart";
 import RecordChart from "@/components/RecordChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -148,10 +149,7 @@ const Group = () => {
           parentType={"GROUPED"}
           records={GroupRecords}
         />
-        {/* 
-          TODO: Uncomment when monthly chart is fixed
-          <GroupMonthlyChart group={GroupData} year={RecordDataYear} /> 
-        */}
+        <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ export interface CreateGroupDTO {
 }
 
 export interface Record {
-  id: string;
+  id: string | null;
   type: PropertyType;
   parentId: string;
   month: number;
@@ -43,7 +43,7 @@ export interface Record {
 }
 
 export interface CreateRecordDTO {
-  id?: string,
+  id: string | null,
   type: PropertyType;
   parentId: string;
   month: number;

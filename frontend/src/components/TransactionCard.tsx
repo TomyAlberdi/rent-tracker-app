@@ -13,7 +13,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
 
-interface ExpenseCardProps {
+interface TransactionCardProps {
   Record: CreateRecordDTO;
   setRecord: React.Dispatch<React.SetStateAction<CreateRecordDTO>>;
   expense: CreateExpenseDTO;
@@ -21,13 +21,14 @@ interface ExpenseCardProps {
   removeExpense: (id: number) => void;
 }
 
-const ExpenseCard = ({
+//TODO: Update to new interfaces and functionality
+const TransactionCard = ({
   Record,
   setRecord,
   expense,
   editing,
   removeExpense,
-}: ExpenseCardProps) => {
+}: TransactionCardProps) => {
   const [NewExpense, setNewExpense] = useState<CreateExpenseDTO>({
     title: expense.title || "",
     description: expense.description || "",
@@ -142,4 +143,4 @@ const ExpenseCard = ({
     </Card>
   );
 };
-export default ExpenseCard;
+export default TransactionCard;

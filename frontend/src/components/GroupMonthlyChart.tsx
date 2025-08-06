@@ -1,26 +1,28 @@
 import RecordChart from "@/components/RecordChart";
 import { useRecordContext } from "@/context/useRecordContext";
-import type { GroupDTO, RecordDTO } from "@/lib/interfaces";
+import type { Group, Record } from "@/lib/interfaces";
 import { useEffect, useState } from "react";
 
 interface GroupMonthlyTableProps {
-  group: GroupDTO;
+  group: Group;
   year: number;
 }
 
-//TODO: update to new interfaces
 const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
   const { getRecords } = useRecordContext();
 
-  const [GroupRecords, setGroupRecords] = useState<RecordDTO[]>([]);
+  const groupProperties = group.properties || [];
+  const [GroupRecords, setGroupRecords] = useState<Record[]>([]);
 
   useEffect(() => {
     const fetchGroupRecords = async () => {
       if (!group || !year) return;
-      const allRecords: RecordDTO[] = [];
-      if (group.properties) {
+      const allRecords: Record[] = [];
+      if (groupProperties) {
         const recordsArrays = await Promise.all(
-          group.properties.map((property) => getRecords(property.id, year))
+          groupProperties.map((property) =>
+            getRecords("INDIVIDUAL", property.id, year)
+          )
         );
         recordsArrays.forEach((records) => {
           allRecords.push(...records);
@@ -32,22 +34,23 @@ const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group, year]);
 
-  const recordsByProperty: { [propertyId: number]: RecordDTO[] } = {};
+  const recordsByProperty: { [propertyId: string]: Record[] } = {};
   GroupRecords.forEach((record) => {
-    if (!recordsByProperty[record.propertyId]) {
-      recordsByProperty[record.propertyId] = [];
+    if (!recordsByProperty[record.parentId]) {
+      recordsByProperty[record.parentId] = [];
     }
-    recordsByProperty[record.propertyId].push(record);
+    recordsByProperty[record.parentId].push(record);
   });
 
   return (
     <div className="flex flex-col gap-4 pb-4">
-      {group.properties?.map((property) => (
+      {groupProperties?.map((property) => (
         <RecordChart
           key={property.id}
           year={year}
-          propertyName={property.name}
-          propertyId={property.id}
+          parentName={property.name}
+          parentId={property.id}
+          parentType="INDIVIDUAL"
           records={recordsByProperty[property.id] || []}
         />
       ))}

@@ -1,3 +1,4 @@
+import AddRecord from "@/components/AddRecord";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,16 +28,16 @@ interface RecordChartProps {
   year: number;
   parentName: string;
   parentId: string;
-  parentType: PropertyType,
+  parentType: PropertyType;
   records: Record[];
 }
 
 const chartConfig = {
-  income: {
+  totalIncome: {
     label: "Ingresos",
     color: "#00bc7d",
   },
-  totalExpenses: {
+  totalExpense: {
     label: "Gastos",
     color: "#ff2056",
   },
@@ -62,6 +63,7 @@ const RecordChart = ({
       };
     }
     return {
+      id: null,
       type: parentType,
       parentId: parentId,
       parentName: parentName,
@@ -122,13 +124,13 @@ const RecordChart = ({
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
-                  dataKey={"income"}
+                  dataKey={"totalIncome"}
                   fill={"#00bc7d"}
                   radius={4}
                   className="cursor-pointer"
                 />
                 <Bar
-                  dataKey={"totalExpenses"}
+                  dataKey={"totalExpense"}
                   fill={"#ff2056"}
                   radius={4}
                   className="cursor-pointer"
@@ -154,10 +156,7 @@ const RecordChart = ({
               </Button>
             </DialogTitle>
           </DialogHeader>
-          {/* 
-            TODO: Uncomment when addrecord component is fixed
-            {selectedRecord && <AddRecord record={selectedRecord} />} 
-          */}
+          {selectedRecord && <AddRecord record={selectedRecord} />}
         </DialogContent>
       </Dialog>
     </>
