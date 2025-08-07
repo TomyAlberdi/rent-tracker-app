@@ -142,17 +142,8 @@ const AddRecord = ({ record }: AddRecordProps) => {
           editing={Editing}
           CalculatedTotalIncome={CalculatedTotalIncome}
           CalculatedTotalExpenses={CalculatedTotalExpenses}
+          CalculatedNetIncome={CalculatedNetIncome}
         />
-        <div className="w-full text-center">
-          <h2 className="alternate-font flex flex-col">
-            Ingreso neto
-            <span className="text-xl font-semibold">
-              {CalculatedNetIncome >= 0
-                ? `$ ${CalculatedNetIncome}`
-                : `- $ ${Math.abs(CalculatedNetIncome)}`}
-            </span>
-          </h2>
-        </div>
         <div className="w-full flex justify-center items-center gap-2">
           {Editing ? (
             <>

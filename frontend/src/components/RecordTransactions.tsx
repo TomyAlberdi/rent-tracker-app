@@ -1,9 +1,19 @@
+import TransactionRow from "@/components/TransactionRow";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { CreateRecordDTO, Transaction } from "@/lib/interfaces";
 import { CirclePlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-interface TransactionWithId extends Transaction {
+export interface TransactionWithId extends Transaction {
   id: number;
 }
 
@@ -13,12 +23,16 @@ interface RecordTransactionsProps {
   editing: boolean;
   CalculatedTotalIncome: number;
   CalculatedTotalExpenses: number;
+  CalculatedNetIncome: number;
 }
 
 const RecordTransactions = ({
   Record,
   setRecord,
   editing,
+  CalculatedTotalIncome,
+  CalculatedTotalExpenses,
+  CalculatedNetIncome,
 }: RecordTransactionsProps) => {
   const [TemporalTransactions, setTemporalTransactions] = useState<
     TransactionWithId[]
@@ -70,29 +84,61 @@ const RecordTransactions = ({
       transactions: transactionsWithoutId,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addTransaction, removeTransaction]);
+  }, [TemporalTransactions]);
 
   return (
-    <div className="w-full bg-rose-900 text-white text-center p-2 rounded-md flex flex-col justify-center items-center gap-2">
+    <div className="w-full bg-secondary text-white text-center p-2 rounded-md flex flex-col justify-center items-center gap-2">
       <h2 className="alternate-font">
         {TemporalTransactions.length === 0
           ? "No hay transacciones registradas."
           : "Transacciones Registradas"}
       </h2>
-      {/*TODO: Remove comment when transaction cards are implemented
-      {TemporalTransactions.map((transaction: TransactionWithId) => (
-        <ExpenseCard
-          Record={Record}
-          setRecord={setRecord}
-          key={expense.id}
-          expense={expense}
-          editing={editing}
-          removeExpense={removeExpense}
-        />
-      ))}
-      {TemporalTransactions.length > 0 && (
-        <h2 className="alternate-font">Total Gastos: ${}</h2>
-      )} */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-1/12">Tipo</TableHead>
+            <TableHead className="w-6/12">Información</TableHead>
+            <TableHead className="w-4/12 text-center">Monto</TableHead>
+            <TableHead className="w-1/12 text-center">Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {
+            TemporalTransactions.map((transaction: TransactionWithId) => (
+              <TransactionRow
+                key={transaction.id}
+                TemporalTransactions={TemporalTransactions}
+                setTemporalTransactions={setTemporalTransactions}
+                transaction={transaction}
+                editing={editing}
+                removeTransaction={removeTransaction}
+              />
+            ))
+          }
+        </TableBody>
+        <TableFooter>
+          <TableRow className="hover:bg-emerald-800 bg-emerald-800">
+            <TableCell colSpan={3} className="text-left">
+              Total Ingresos
+            </TableCell>
+            <TableCell>$ {CalculatedTotalIncome}</TableCell>
+          </TableRow>
+          <TableRow className="hover:bg-rose-800 bg-rose-800">
+            <TableCell colSpan={3} className="text-left">
+              Total Gastos
+            </TableCell>
+            <TableCell>$ {CalculatedTotalExpenses}</TableCell>
+          </TableRow>
+          <TableRow className="hover:bg-primary-foreground bg-primary-foreground">
+            <TableCell colSpan={3} className="text-left">Ingreso Neto</TableCell>
+            <TableCell>
+              {CalculatedNetIncome >= 0
+                ? `$ ${CalculatedNetIncome}`
+                : `- $ ${Math.abs(CalculatedNetIncome)}`}
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
       {editing && (
         <Button
           variant={"default"}
