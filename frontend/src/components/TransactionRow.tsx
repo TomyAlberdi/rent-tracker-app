@@ -1,31 +1,29 @@
-import type { TransactionWithId } from "@/components/RecordTransactions";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { TableCell, TableRow } from "@/components/ui/table";
+import type { CreateRecordDTO, Transaction } from "@/lib/interfaces";
 import { Save, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface TransactionRowProps {
-  TemporalTransactions: TransactionWithId[];
-  setTemporalTransactions: React.Dispatch<
-    React.SetStateAction<TransactionWithId[]>
-  >;
-  transaction: TransactionWithId;
+  Record: CreateRecordDTO;
+  setRecord: React.Dispatch<React.SetStateAction<CreateRecordDTO>>;
+  transaction: Transaction;
   editing: boolean;
-  removeTransaction: (id: number) => void;
+  removeTransaction: (id: string) => void;
 }
 
 const TransactionRow = ({
-  TemporalTransactions,
-  setTemporalTransactions,
+  Record,
+  setRecord,
   transaction,
   editing,
   removeTransaction,
 }: TransactionRowProps) => {
-  const [NewTransaction, setNewTransaction] = useState<TransactionWithId>({
-    id: transaction.id,
+  const [NewTransaction, setNewTransaction] = useState<Transaction>({
+    temporalId: transaction.temporalId,
     type: transaction.type,
     title: transaction.title || "",
     description: transaction.description || "",
@@ -37,13 +35,18 @@ const TransactionRow = ({
       toast.warning("Debe ingresar un título y un monto.");
       return;
     }
-    const newTransactions = TemporalTransactions.map((transaction) => {
-      if (transaction.id === NewTransaction.id) {
+    const newTransactions = Record.transactions.map((transaction) => {
+      if (transaction.temporalId === NewTransaction.temporalId) {
         return NewTransaction;
       }
       return transaction;
     });
-    setTemporalTransactions(newTransactions);
+    setRecord((prev) => ({
+      ...prev,
+      transactions: newTransactions,
+    }));
+    console.log("saved");
+    console.log(newTransactions);
   };
 
   if (!editing)
@@ -57,7 +60,8 @@ const TransactionRow = ({
           )}
         </TableCell>
         <TableCell className="text-left">
-          <span>{NewTransaction.title}</span><br />
+          <span>{NewTransaction.title}</span>
+          <br />
           {NewTransaction.description && (
             <span>{NewTransaction.description}</span>
           )}
@@ -67,12 +71,12 @@ const TransactionRow = ({
             ? `$ ${NewTransaction.amount}`
             : `- $ ${NewTransaction.amount}`}
         </TableCell>
-        <TableCell className="flex justify-center gap-1">
+        <TableCell className="text-center">
           <Button
             variant={"destructive"}
             className="bg-rose-900!"
             type="button"
-            onClick={() => transaction.id && removeTransaction(transaction.id)}
+            disabled
           >
             <Trash2 size={20} />
           </Button>
@@ -80,38 +84,53 @@ const TransactionRow = ({
       </TableRow>
     );
 
-    //TODO: Implement edit transaction inputs and functionality
   return (
-    <Card
-      className={`w-full ${
-        transaction.type === "INCOME" ? "bg-emerald-700" : "bg-rose-900"
-      }`}
-    >
-      <CardHeader>
-        <Input
-          value={NewTransaction.title}
-          placeholder="Título"
-          onChange={(e) =>
-            setNewTransaction((prev) => ({
-              ...prev,
-              title: e.target.value,
-            }))
-          }
-          className="w-full"
-        />
-        <div className="flex items-center gap-2">
+    <TableRow>
+      <TableCell>
+        <div className="flex flex-col justify-center items-center gap-2">
+          {NewTransaction.type === "INCOME" ? (
+            <TrendingUp size={20} color="green" />
+          ) : (
+            <TrendingDown size={20} color="red" />
+          )}
+          <Switch
+            checked={NewTransaction.type === "INCOME"}
+            onCheckedChange={(checked) =>
+              setNewTransaction((prev) => ({
+                ...prev,
+                type: checked ? "INCOME" : "EXPENSE",
+              }))
+            }
+          />
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex flex-col justify-center items-center gap-2">
+          <Input
+            value={NewTransaction.title}
+            placeholder="Título"
+            onChange={(e) =>
+              setNewTransaction((prev) => ({
+                ...prev,
+                title: e.target.value,
+              }))
+            }
+            className="w-full"
+          />
           <Input
             value={NewTransaction.description ?? ""}
-            placeholder="Descripción"
+            placeholder="Descripción (opcional)"
             onChange={(e) =>
               setNewTransaction((prev) => ({
                 ...prev,
                 description: e.target.value,
               }))
             }
-            className="w-3/4"
+            className="w-full"
           />
         </div>
+      </TableCell>
+      <TableCell>
         <Input
           type="number"
           value={NewTransaction.amount}
@@ -124,23 +143,27 @@ const TransactionRow = ({
           }
           className="w-full"
         />
-        <div className="flex justify-center items-center gap-2 pt-2">
+      </TableCell>
+      <TableCell>
+        <div className="flex flex-col justify-center items-center gap-2">
           <Button
             variant={"destructive"}
-            className="w-1/4 bg-rose-900!"
+            className="bg-rose-900! w-full"
             type="button"
-            onClick={() => transaction.id && removeTransaction(transaction.id)}
+            onClick={() => {
+              if (NewTransaction.temporalId !== undefined) {
+                removeTransaction(NewTransaction.temporalId);
+              }
+            }}
           >
             <Trash2 size={20} />
-            Eliminar
           </Button>
-          <Button className="w-1/4" type="button" onClick={saveTransaction}>
+          <Button className="w-full" type="button" onClick={saveTransaction}>
             <Save size={20} />
-            Guardar
           </Button>
         </div>
-      </CardHeader>
-    </Card>
+      </TableCell>
+    </TableRow>
   );
 };
 export default TransactionRow;

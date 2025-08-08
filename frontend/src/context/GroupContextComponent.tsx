@@ -30,6 +30,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     }
   };
 
+  //TODO: get group doesn't have any properties
   const getGroup = async (groupId: string) => {
     try {
       const url = `${BASE_URL}/${groupId}`;

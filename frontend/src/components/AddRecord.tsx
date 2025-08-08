@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRecordContext } from "@/context/useRecordContext";
-import type { CreateRecordDTO, Record } from "@/lib/interfaces";
+import type { CreateRecordDTO, Record, Transaction } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
 import { CircleSlash, FileCheck, PencilLine, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -16,9 +16,15 @@ import { toast } from "sonner";
 
 interface AddRecordProps {
   record: Record;
+  UpdateRecords: boolean;
+  setUpdateRecords: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AddRecord = ({ record }: AddRecordProps) => {
+const AddRecord = ({
+  record,
+  UpdateRecords,
+  setUpdateRecords,
+}: AddRecordProps) => {
   const { saveRecord, deleteRecord } = useRecordContext();
 
   const [Editing, setEditing] = useState(false);
@@ -66,13 +72,30 @@ const AddRecord = ({ record }: AddRecordProps) => {
     });
   };
 
+  const [shouldSave, setShouldSave] = useState(false);
+
+  useEffect(() => {
+    if (shouldSave) {
+      saveRecord(Record).finally(() => {
+        setLoading(false);
+        setEditing(false);
+        setUpdateRecords(!UpdateRecords);
+        setShouldSave(false);
+      });
+    }
+  }, [Record, shouldSave, saveRecord, UpdateRecords, setUpdateRecords]);
+
   const onSubmit = () => {
     setLoading(true);
-    saveRecord(Record).finally(() => {
-      setLoading(false);
-      setEditing(false);
-      window.location.reload();
-    });
+    const transactionsWithoutId = (Record.transactions as Transaction[]).map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ temporalId, ...rest }) => rest
+    );
+    setRecord((prevRecord) => ({
+      ...prevRecord,
+      transactions: transactionsWithoutId,
+    }));
+    setShouldSave(true);
   };
 
   const handleDeleteClick = () => {
@@ -85,7 +108,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
   const handleDelete = async () => {
     if (!record.id) return;
     deleteRecord(record.id).finally(() => {
-      window.location.reload();
+      setUpdateRecords(!UpdateRecords);
     });
   };
 

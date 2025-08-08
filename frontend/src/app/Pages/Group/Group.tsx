@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupContext } from "@/context/useGroupContext";
-import { useRecordContext } from "@/context/useRecordContext";
-import type { Group, Record } from "@/lib/interfaces";
+import type { Group } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -27,10 +26,8 @@ import { Link, useParams } from "react-router-dom";
 const Group = () => {
   const { id } = useParams();
   const { getGroup } = useGroupContext();
-  const { getRecords } = useRecordContext();
 
   const [GroupData, setGroupData] = useState<Group | null>(null);
-  const [GroupRecords, setGroupRecords] = useState<Record[]>([]);
   const [GroupUpdated, setGroupUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
@@ -46,17 +43,6 @@ const Group = () => {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, GroupUpdated]);
-
-  useEffect(() => {
-    const fetchGroupRecords = async () => {
-      if (!GroupData || !RecordDataYear) return;
-      getRecords("GROUPED", GroupData.id, RecordDataYear).then((records) => {
-        setGroupRecords(records);
-      });
-    };
-    fetchGroupRecords();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [GroupData, RecordDataYear]);
 
   const handlePreviousYear = () => {
     setRecordDataYear(RecordDataYear - 1);
@@ -147,7 +133,6 @@ const Group = () => {
           parentName={GroupData.name}
           parentId={GroupData.id}
           parentType={"GROUPED"}
-          records={GroupRecords}
         />
         <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
       </div>

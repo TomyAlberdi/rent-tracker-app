@@ -52,6 +52,7 @@ export interface CreateRecordDTO {
 }
 
 export interface Transaction {
+  temporalId?: string;
   title: string;
   description: string | null;
   amount: number;

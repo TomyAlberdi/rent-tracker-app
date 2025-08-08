@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePropertyContext } from "@/context/usePropertyContext";
-import { useRecordContext } from "@/context/useRecordContext";
-import type { Property, Record } from "@/lib/interfaces";
+import type { Property } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -24,10 +23,8 @@ import { useParams } from "react-router-dom";
 const Property = () => {
   const { id } = useParams();
   const { getPropertyById } = usePropertyContext();
-  const { getRecords } = useRecordContext();
 
   const [PropertyData, setPropertyData] = useState<Property | null>(null);
-  const [PropertyRecords, setPropertyRecords] = useState<Record[]>([]);
   const [PropertyUpdated, setPropertyUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
@@ -44,16 +41,6 @@ const Property = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, PropertyUpdated]);
 
-  useEffect(() => {
-    const fetchPropertyRecords = async () => {
-      if (!PropertyData || !RecordDataYear) return;
-      getRecords("INDIVIDUAL", PropertyData.id, RecordDataYear).then((records) => {
-        setPropertyRecords(records);
-      });
-    };
-    fetchPropertyRecords();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [PropertyData, RecordDataYear]);
 
   const handlePreviousYear = () => {
     setRecordDataYear(RecordDataYear - 1);
@@ -127,7 +114,6 @@ const Property = () => {
           parentName={PropertyData.name}
           parentId={PropertyData.id}
           parentType={"INDIVIDUAL"}
-          records={PropertyRecords}
         />
       </div>
     </div>

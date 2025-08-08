@@ -11,11 +11,7 @@ import {
 } from "@/components/ui/table";
 import type { CreateRecordDTO, Transaction } from "@/lib/interfaces";
 import { CirclePlus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
-export interface TransactionWithId extends Transaction {
-  id: number;
-}
+import { useEffect } from "react";
 
 interface RecordTransactionsProps {
   Record: CreateRecordDTO;
@@ -34,62 +30,51 @@ const RecordTransactions = ({
   CalculatedTotalExpenses,
   CalculatedNetIncome,
 }: RecordTransactionsProps) => {
-  const [TemporalTransactions, setTemporalTransactions] = useState<
-    TransactionWithId[]
-  >([]);
-
   useEffect(() => {
     const transactionsWithId = Record.transactions.map((transaction) => ({
       ...transaction,
-      id: Date.now() + Math.random(),
+      temporalId: crypto.randomUUID(),
     }));
-    setTemporalTransactions(transactionsWithId);
+    setRecord((prev) => ({
+      ...prev,
+      transactions: transactionsWithId,
+    }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const addTransaction = useCallback(() => {
+  const addTransaction = () => {
     const newTransactions = [
-      ...TemporalTransactions,
+      ...Record.transactions,
       {
-        id: Date.now() + Math.random(),
+        temporalId: crypto.randomUUID(),
         type: "INCOME" as Transaction["type"],
         title: "",
         description: "",
         amount: 0,
       },
     ];
-    setTemporalTransactions((prev) => ({
+    setRecord((prev) => ({
       ...prev,
       transactions: newTransactions,
     }));
-  }, [TemporalTransactions]);
-
-  const removeTransaction = useCallback(
-    (id: number) => {
-      const newTransactions = TemporalTransactions.filter(
-        (transaction) => transaction.id !== id
-      );
-      setTemporalTransactions(newTransactions);
-    },
-    [TemporalTransactions]
-  );
-
-  useEffect(() => {
-    const transactionsWithoutId = TemporalTransactions.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ id, ...rest }) => rest
-    );
-    setRecord((prevRecord) => ({
-      ...prevRecord,
-      transactions: transactionsWithoutId,
+    console.log("added");
+    console.log(newTransactions);
+  };
+  //FIXME: removetransaction doesn't work
+  const removeTransaction = (id: string) => {
+    console.log(Record.transactions);
+    setRecord((prev) => ({
+      ...prev,
+      transactions: prev.transactions.filter(
+        (transaction) => transaction.temporalId !== id
+      ),
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [TemporalTransactions]);
+  };
 
   return (
     <div className="w-full bg-secondary text-white text-center p-2 rounded-md flex flex-col justify-center items-center gap-2">
       <h2 className="alternate-font">
-        {TemporalTransactions.length === 0
+        {Record.transactions.length === 0
           ? "No hay transacciones registradas."
           : "Transacciones Registradas"}
       </h2>
@@ -103,18 +88,18 @@ const RecordTransactions = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {
-            TemporalTransactions.map((transaction: TransactionWithId) => (
+          {Record.transactions.map(
+            (transaction: Transaction, index: number) => (
               <TransactionRow
-                key={transaction.id}
-                TemporalTransactions={TemporalTransactions}
-                setTemporalTransactions={setTemporalTransactions}
+                key={index}
+                Record={Record}
+                setRecord={setRecord}
                 transaction={transaction}
                 editing={editing}
                 removeTransaction={removeTransaction}
               />
-            ))
-          }
+            )
+          )}
         </TableBody>
         <TableFooter>
           <TableRow className="hover:bg-emerald-800 bg-emerald-800">
@@ -130,7 +115,9 @@ const RecordTransactions = ({
             <TableCell>$ {CalculatedTotalExpenses}</TableCell>
           </TableRow>
           <TableRow className="hover:bg-primary-foreground bg-primary-foreground">
-            <TableCell colSpan={3} className="text-left">Ingreso Neto</TableCell>
+            <TableCell colSpan={3} className="text-left">
+              Ingreso Neto
+            </TableCell>
             <TableCell>
               {CalculatedNetIncome >= 0
                 ? `$ ${CalculatedNetIncome}`
@@ -147,7 +134,7 @@ const RecordTransactions = ({
           disabled={!editing}
           onClick={addTransaction}
         >
-          <CirclePlus /> Añadir Gasto
+          <CirclePlus /> Añadir Transacción
         </Button>
       )}
     </div>

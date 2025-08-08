@@ -19,9 +19,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useRecordContext } from "@/context/useRecordContext";
 import type { PropertyType, Record } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 interface RecordChartProps {
@@ -29,7 +30,6 @@ interface RecordChartProps {
   parentName: string;
   parentId: string;
   parentType: PropertyType;
-  records: Record[];
 }
 
 const chartConfig = {
@@ -48,35 +48,54 @@ const RecordChart = ({
   parentId,
   parentName,
   parentType,
-  records,
 }: RecordChartProps) => {
+  const { getRecords } = useRecordContext();
+
   const [DialogOpen, setDialogOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [Records, setRecords] = useState<Record[]>([]);
+  const [UpdateRecords, setUpdateRecords] = useState(false);
+  const [FilledRecords, setFilledRecords] = useState<Record[]>([]);
 
-  const filledRecords = Array.from({ length: 12 }, (_, i) => {
-    const month = i + 1;
-    const found = records.find((r) => r.month === month);
-    if (found) {
-      return {
-        ...found,
-        parentName: parentName,
-      };
-    }
-    return {
-      id: null,
-      type: parentType,
-      parentId: parentId,
-      parentName: parentName,
-      month,
-      year,
-      transactions: [],
-      totalIncome: 0,
-      totalExpenses: 0,
-      netIncome: 0,
+  useEffect(() => {
+    const fetchPropertyRecords = async () => {
+      if (!parentId || !year) return;
+      getRecords(parentType, parentId, year).then((records) => {
+        setRecords(records);
+      });
     };
-  });
+    fetchPropertyRecords();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parentId, year, UpdateRecords]);
 
-  const recordsWithMonthName = filledRecords.map((record) => ({
+  useEffect(() => {
+    const filledRecords = Array.from({ length: 12 }, (_, i) => {
+      const month = i + 1;
+      const found = Records.find((r) => r.month === month);
+      if (found) {
+        return {
+          ...found,
+          parentName: parentName,
+        };
+      }
+      return {
+        id: null,
+        type: parentType,
+        parentId: parentId,
+        parentName: parentName,
+        month,
+        year,
+        transactions: [],
+        totalIncome: 0,
+        totalExpenses: 0,
+        netIncome: 0,
+      };
+    });
+    setFilledRecords(filledRecords);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Records]);
+
+  const recordsWithMonthName = FilledRecords.map((record) => ({
     ...record,
     monthName: getMonthName(record.month),
   }));
@@ -156,7 +175,13 @@ const RecordChart = ({
               </Button>
             </DialogTitle>
           </DialogHeader>
-          {selectedRecord && <AddRecord record={selectedRecord} />}
+          {selectedRecord && (
+            <AddRecord
+              record={selectedRecord}
+              UpdateRecords={UpdateRecords}
+              setUpdateRecords={setUpdateRecords}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </>
