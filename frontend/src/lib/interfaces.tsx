@@ -40,6 +40,9 @@ export interface Record {
   totalIncome: number;
   totalExpenses: number;
   netIncome: number;
+  // internal fields (not stored in database)
+  monthName?: string | null;
+  parentName?: string | null;
 }
 
 export interface CreateRecordDTO {
@@ -52,11 +55,12 @@ export interface CreateRecordDTO {
 }
 
 export interface Transaction {
-  temporalId?: string;
   title: string;
   description: string | null;
   amount: number;
   type: ExpenseType;
+  // internal fields (not stored in database)
+  temporalId?: string;
 }
 
 export type PropertyType = 'INDIVIDUAL' | 'GROUPED';

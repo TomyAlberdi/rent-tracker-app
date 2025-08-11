@@ -72,30 +72,27 @@ const AddRecord = ({
     });
   };
 
-  const [shouldSave, setShouldSave] = useState(false);
-
-  useEffect(() => {
-    if (shouldSave) {
-      saveRecord(Record).finally(() => {
-        setLoading(false);
-        setEditing(false);
-        setUpdateRecords(!UpdateRecords);
-        setShouldSave(false);
-      });
-    }
-  }, [Record, shouldSave, saveRecord, UpdateRecords, setUpdateRecords]);
-
-  const onSubmit = () => {
-    setLoading(true);
+  const checkRecord = (record: CreateRecordDTO) => {
     const transactionsWithoutId = (Record.transactions as Transaction[]).map(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ temporalId, ...rest }) => rest
     );
-    setRecord((prevRecord) => ({
-      ...prevRecord,
+    return {
+      ...record,
       transactions: transactionsWithoutId,
-    }));
-    setShouldSave(true);
+    };
+  };
+
+  const onSubmit = () => {
+    setLoading(true);
+    const transactionsWithoutId = checkRecord(Record);
+    if (transactionsWithoutId) {
+      saveRecord(transactionsWithoutId).finally(() => {
+        setLoading(false);
+        setEditing(false);
+        setUpdateRecords(!UpdateRecords);
+      });
+    }
   };
 
   const handleDeleteClick = () => {

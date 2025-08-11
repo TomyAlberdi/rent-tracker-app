@@ -20,10 +20,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRecordContext } from "@/context/useRecordContext";
-import type { PropertyType, Record } from "@/lib/interfaces";
+import type { PropertyType, Record, Transaction } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+
+const addIdToTransactions = (transactions: Transaction[]) => {
+  return transactions.map((transaction) => ({
+    ...transaction,
+    temporalId: crypto.randomUUID(),
+  }));
+};
 
 interface RecordChartProps {
   year: number;
@@ -55,55 +62,60 @@ const RecordChart = ({
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [Records, setRecords] = useState<Record[]>([]);
   const [UpdateRecords, setUpdateRecords] = useState(false);
-  const [FilledRecords, setFilledRecords] = useState<Record[]>([]);
+  const [SelectedRecord, setSelectedRecord] = useState<Record | null>(null);
+
+  const fillRecords = useCallback(
+    (records: Record[]) => {
+      const filledRecords = Array.from({ length: 12 }, (_, i) => {
+        const month = i + 1;
+        const found = records.find((r) => r.month === month);
+        if (found) {
+          return {
+            ...found,
+            parentName: parentName,
+            monthName: getMonthName(month),
+            transactions: addIdToTransactions(found.transactions),
+          };
+        }
+        const fillerRecord: Record = {
+          id: null,
+          type: parentType,
+          parentId: parentId,
+          parentName: parentName,
+          month,
+          year,
+          totalIncome: 0,
+          totalExpenses: 0,
+          netIncome: 0,
+          monthName: getMonthName(month),
+          transactions: [],
+        };
+        fillerRecord.transactions = addIdToTransactions(
+          fillerRecord.transactions
+        );
+        return fillerRecord;
+      });
+      return filledRecords.sort((a, b) => a.month - b.month);
+    },
+    [parentId, parentName, parentType, year]
+  );
 
   useEffect(() => {
     const fetchPropertyRecords = async () => {
       if (!parentId || !year) return;
-      getRecords(parentType, parentId, year).then((records) => {
-        setRecords(records);
-      });
+      const records = await getRecords(parentType, parentId, year);
+      const filledRecords = fillRecords(records);
+      setRecords(filledRecords);
     };
     fetchPropertyRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parentId, year, UpdateRecords]);
 
   useEffect(() => {
-    const filledRecords = Array.from({ length: 12 }, (_, i) => {
-      const month = i + 1;
-      const found = Records.find((r) => r.month === month);
-      if (found) {
-        return {
-          ...found,
-          parentName: parentName,
-        };
-      }
-      return {
-        id: null,
-        type: parentType,
-        parentId: parentId,
-        parentName: parentName,
-        month,
-        year,
-        transactions: [],
-        totalIncome: 0,
-        totalExpenses: 0,
-        netIncome: 0,
-      };
-    });
-    setFilledRecords(filledRecords);
+    const selectedRecord = Records.find((r) => r.month === selectedMonth);
+    setSelectedRecord(selectedRecord || null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Records]);
-
-  const recordsWithMonthName = FilledRecords.map((record) => ({
-    ...record,
-    monthName: getMonthName(record.month),
-  }));
-
-  const selectedRecord =
-    selectedMonth != null
-      ? recordsWithMonthName.find((r) => r.month === selectedMonth)
-      : null;
+  }, [selectedMonth]);
 
   interface BarClickData {
     activeLabel?: string;
@@ -111,9 +123,7 @@ const RecordChart = ({
 
   const handleBarClick = (data: BarClickData) => {
     if (data && data.activeLabel) {
-      const record = recordsWithMonthName.find(
-        (r) => r.monthName === data.activeLabel
-      );
+      const record = Records.find((r) => r.monthName === data.activeLabel);
       if (record) {
         setSelectedMonth(record.month);
         setDialogOpen(true);
@@ -123,7 +133,7 @@ const RecordChart = ({
 
   return (
     <>
-      <Card>
+      <Card className="mb-4">
         <CardHeader>
           <CardTitle>{parentName}</CardTitle>
           <CardDescription>{year}</CardDescription>
@@ -131,7 +141,7 @@ const RecordChart = ({
             <ChartContainer config={chartConfig}>
               <BarChart
                 accessibilityLayer
-                data={recordsWithMonthName}
+                data={Records}
                 onClick={handleBarClick}
               >
                 <CartesianGrid vertical={false} />
@@ -175,9 +185,9 @@ const RecordChart = ({
               </Button>
             </DialogTitle>
           </DialogHeader>
-          {selectedRecord && (
+          {SelectedRecord && (
             <AddRecord
-              record={selectedRecord}
+              record={SelectedRecord}
               UpdateRecords={UpdateRecords}
               setUpdateRecords={setUpdateRecords}
             />

@@ -3,12 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { CreateRecordDTO, Transaction } from "@/lib/interfaces";
-import { Save, Trash2, TrendingDown, TrendingUp } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface TransactionRowProps {
-  Record: CreateRecordDTO;
   setRecord: React.Dispatch<React.SetStateAction<CreateRecordDTO>>;
   transaction: Transaction;
   editing: boolean;
@@ -16,7 +14,6 @@ interface TransactionRowProps {
 }
 
 const TransactionRow = ({
-  Record,
   setRecord,
   transaction,
   editing,
@@ -30,24 +27,16 @@ const TransactionRow = ({
     amount: transaction.amount ?? 0,
   });
 
-  const saveTransaction = () => {
-    if (!NewTransaction.title || !NewTransaction.amount) {
-      toast.warning("Debe ingresar un título y un monto.");
-      return;
-    }
-    const newTransactions = Record.transactions.map((transaction) => {
-      if (transaction.temporalId === NewTransaction.temporalId) {
-        return NewTransaction;
-      }
-      return transaction;
-    });
+  useEffect(() => {
+    // Skip invalid cases
+    if (!NewTransaction.title || NewTransaction.amount <= 0) return;
     setRecord((prev) => ({
       ...prev,
-      transactions: newTransactions,
+      transactions: prev.transactions.map((t) =>
+        t.temporalId === NewTransaction.temporalId ? NewTransaction : t
+      ),
     }));
-    console.log("saved");
-    console.log(newTransactions);
-  };
+  }, [NewTransaction, setRecord]);
 
   if (!editing)
     return (
@@ -145,23 +134,18 @@ const TransactionRow = ({
         />
       </TableCell>
       <TableCell>
-        <div className="flex flex-col justify-center items-center gap-2">
-          <Button
-            variant={"destructive"}
-            className="bg-rose-900! w-full"
-            type="button"
-            onClick={() => {
-              if (NewTransaction.temporalId !== undefined) {
-                removeTransaction(NewTransaction.temporalId);
-              }
-            }}
-          >
-            <Trash2 size={20} />
-          </Button>
-          <Button className="w-full" type="button" onClick={saveTransaction}>
-            <Save size={20} />
-          </Button>
-        </div>
+        <Button
+          variant={"destructive"}
+          className="bg-rose-900!"
+          type="button"
+          onClick={() => {
+            if (NewTransaction.temporalId !== undefined) {
+              removeTransaction(NewTransaction.temporalId);
+            }
+          }}
+        >
+          <Trash2 size={20} />
+        </Button>
       </TableCell>
     </TableRow>
   );

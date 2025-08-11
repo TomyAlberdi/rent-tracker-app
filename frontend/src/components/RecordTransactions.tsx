@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import type { CreateRecordDTO, Transaction } from "@/lib/interfaces";
 import { CirclePlus } from "lucide-react";
-import { useEffect } from "react";
 
 interface RecordTransactionsProps {
   Record: CreateRecordDTO;
@@ -30,25 +29,13 @@ const RecordTransactions = ({
   CalculatedTotalExpenses,
   CalculatedNetIncome,
 }: RecordTransactionsProps) => {
-  useEffect(() => {
-    const transactionsWithId = Record.transactions.map((transaction) => ({
-      ...transaction,
-      temporalId: crypto.randomUUID(),
-    }));
-    setRecord((prev) => ({
-      ...prev,
-      transactions: transactionsWithId,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const addTransaction = () => {
     const newTransactions = [
       ...Record.transactions,
       {
         temporalId: crypto.randomUUID(),
         type: "INCOME" as Transaction["type"],
-        title: "",
+        title: `Transacción ${Record.transactions.length + 1}`,
         description: "",
         amount: 0,
       },
@@ -57,17 +44,16 @@ const RecordTransactions = ({
       ...prev,
       transactions: newTransactions,
     }));
-    console.log("added");
-    console.log(newTransactions);
   };
-  //FIXME: removetransaction doesn't work
+
   const removeTransaction = (id: string) => {
-    console.log(Record.transactions);
+    const newTransactions = Record.transactions.filter(
+      (transaction) => transaction.temporalId !== id
+    );
+    console.log(newTransactions);
     setRecord((prev) => ({
       ...prev,
-      transactions: prev.transactions.filter(
-        (transaction) => transaction.temporalId !== id
-      ),
+      transactions: newTransactions,
     }));
   };
 
@@ -89,10 +75,9 @@ const RecordTransactions = ({
         </TableHeader>
         <TableBody>
           {Record.transactions.map(
-            (transaction: Transaction, index: number) => (
+            (transaction: Transaction) => (
               <TransactionRow
-                key={index}
-                Record={Record}
+                key={transaction.temporalId}
                 setRecord={setRecord}
                 transaction={transaction}
                 editing={editing}

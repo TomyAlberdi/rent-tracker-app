@@ -43,7 +43,7 @@ const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
   });
 
   return (
-    <div className="flex flex-col gap-4 pb-4">
+    <div className="flex flex-col">
       {groupProperties?.map((property) => (
         <RecordChart
           key={property.id}
@@ -51,7 +51,6 @@ const GroupMonthlyChart = ({ group, year }: GroupMonthlyTableProps) => {
           parentName={property.name}
           parentId={property.id}
           parentType="INDIVIDUAL"
-          records={recordsByProperty[property.id] || []}
         />
       ))}
     </div>
