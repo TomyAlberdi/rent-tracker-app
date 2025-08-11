@@ -23,7 +23,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-const Group = () => {
+const GroupPage = () => {
   const { id } = useParams();
   const { getGroup } = useGroupContext();
 
@@ -139,4 +139,4 @@ const Group = () => {
     </div>
   );
 };
-export default Group;
+export default GroupPage;

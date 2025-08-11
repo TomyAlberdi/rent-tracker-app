@@ -14,6 +14,24 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const getDropdownGroups = async () => {
     try {
+      const url = `${BASE_URL}/list/light`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        toast.error("Ocurrió un error al obtener los grupos");
+        console.warn("No groups found: ", res);
+        return [];
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("Failed to fetch groups", err);
+      toast.error("Ocurrió un error al obtener los grupos");
+      return [];
+    }
+  };
+
+  const getGroups = async () => {
+    try {
       const url = `${BASE_URL}/list`;
       const res = await fetch(url);
       if (!res.ok) {
@@ -69,10 +87,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
     }
   };
 
-  const updateGroup = async (
-    groupId: string,
-    group: CreateGroupDTO
-  ) => {
+  const updateGroup = async (groupId: string, group: CreateGroupDTO) => {
     try {
       const response = await fetch(`${BASE_URL}/${groupId}`, {
         method: "PUT",
@@ -111,6 +126,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const exportData: GroupContextType = {
     getDropdownGroups,
+    getGroups,
     getGroup,
     createGroup,
     updateGroup,

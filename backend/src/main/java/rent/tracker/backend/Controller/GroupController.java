@@ -17,6 +17,11 @@ public class GroupController {
     private final GroupRepository groupRepository;
     
     @GetMapping("/list")
+    public ResponseEntity<?> getGroups() {
+        return ResponseEntity.ok(groupService.getGroups());
+    }
+    
+    @GetMapping("/list/light")
     public ResponseEntity<?> getLightGroups() {
         return ResponseEntity.ok(groupService.getLightGroups());
     }

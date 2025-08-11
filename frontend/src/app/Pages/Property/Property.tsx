@@ -20,7 +20,7 @@ import {
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const Property = () => {
+const PropertyPage = () => {
   const { id } = useParams();
   const { getPropertyById } = usePropertyContext();
 
@@ -119,4 +119,4 @@ const Property = () => {
     </div>
   );
 };
-export default Property;
+export default PropertyPage;

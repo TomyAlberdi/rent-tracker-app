@@ -1,7 +1,7 @@
 import NotFound from "@/app/Pages/Error/NotFound";
 import Group from "@/app/Pages/Group/Group";
 import Home from "@/app/Pages/Home/Home";
-import Property from "@/app/Pages/Property/Property";
+import PropertyPage from "@/app/Pages/Property/Property";
 
 export const routesConfig = [
   {
@@ -18,6 +18,6 @@ export const routesConfig = [
   },
   {
     path: "/property/:id",
-    element: <Property />,
+    element: <PropertyPage />,
   }
 ];
