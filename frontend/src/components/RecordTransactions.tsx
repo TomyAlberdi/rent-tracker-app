@@ -74,30 +74,28 @@ const RecordTransactions = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Record.transactions.map(
-            (transaction: Transaction) => (
-              <TransactionRow
-                key={transaction.temporalId}
-                setRecord={setRecord}
-                transaction={transaction}
-                editing={editing}
-                removeTransaction={removeTransaction}
-              />
-            )
-          )}
+          {Record.transactions.map((transaction: Transaction) => (
+            <TransactionRow
+              key={transaction.temporalId}
+              setRecord={setRecord}
+              transaction={transaction}
+              editing={editing}
+              removeTransaction={removeTransaction}
+            />
+          ))}
         </TableBody>
         <TableFooter>
           <TableRow className="hover:bg-emerald-800 bg-emerald-800">
             <TableCell colSpan={3} className="text-left">
               Total Ingresos
             </TableCell>
-            <TableCell>$ {CalculatedTotalIncome}</TableCell>
+            <TableCell>$ {CalculatedTotalIncome ? CalculatedTotalIncome.toLocaleString() : 0}</TableCell>
           </TableRow>
           <TableRow className="hover:bg-rose-800 bg-rose-800">
             <TableCell colSpan={3} className="text-left">
               Total Gastos
             </TableCell>
-            <TableCell>$ {CalculatedTotalExpenses}</TableCell>
+            <TableCell>$ {CalculatedTotalExpenses ? CalculatedTotalExpenses.toLocaleString() : 0}</TableCell>
           </TableRow>
           <TableRow className="hover:bg-primary-foreground bg-primary-foreground">
             <TableCell colSpan={3} className="text-left">
@@ -105,8 +103,8 @@ const RecordTransactions = ({
             </TableCell>
             <TableCell>
               {CalculatedNetIncome >= 0
-                ? `$ ${CalculatedNetIncome}`
-                : `- $ ${Math.abs(CalculatedNetIncome)}`}
+                ? `$ ${CalculatedNetIncome.toLocaleString()}`
+                : `- $ ${CalculatedNetIncome.toLocaleString()}`}
             </TableCell>
           </TableRow>
         </TableFooter>

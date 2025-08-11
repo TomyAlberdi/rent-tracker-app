@@ -56,9 +56,8 @@ const TransactionRow = ({
           )}
         </TableCell>
         <TableCell>
-          {NewTransaction.type === "INCOME"
-            ? `$ ${NewTransaction.amount}`
-            : `- $ ${NewTransaction.amount}`}
+          {NewTransaction.type === "EXPENSE" && "-"} ${" "}
+          {NewTransaction.amount ? NewTransaction.amount.toLocaleString() : 0}
         </TableCell>
         <TableCell className="text-center">
           <Button
