@@ -40,7 +40,7 @@ interface AddPropertyProps {
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
   description: z.string().optional(),
-  groupId: z.string().optional().nullable(),
+  groupId: z.string().nullable(),
 });
 
 const AddProperty = ({
@@ -64,7 +64,7 @@ const AddProperty = ({
     defaultValues: {
       name: DefaultProperty?.name || "",
       description: DefaultProperty?.description || "",
-      groupId: DefaultProperty?.groupId?.toString() || "none",
+      groupId: DefaultProperty?.groupId || null,
     },
   });
 
@@ -75,7 +75,7 @@ const AddProperty = ({
       name: values.name,
       description: values.description || null,
       type: values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
-      groupId: values.groupId !== "none" ? Number(values.groupId) : null,
+      groupId: values.groupId !== "none" ? values.groupId : null,
     };
     if (DefaultProperty) {
       updateProperty(DefaultProperty.id, data).finally(() => {
@@ -157,9 +157,7 @@ const AddProperty = ({
                     <FormLabel>Grupo</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={
-                        DefaultProperty?.groupId?.toString() || "none"
-                      }
+                      defaultValue={DefaultProperty?.groupId || "none"}
                       disabled={DropdownGroups.length === 0}
                     >
                       <FormControl>
@@ -172,10 +170,7 @@ const AddProperty = ({
                           Sin grupo
                         </SelectItem>
                         {DropdownGroups.map((group) => (
-                          <SelectItem
-                            key={group.id}
-                            value={group.id.toString()}
-                          >
+                          <SelectItem key={group.id} value={group.id}>
                             {group.name}
                           </SelectItem>
                         ))}

@@ -8,14 +8,14 @@ export interface Property {
   name: string;
   description: string | null;
   type: PropertyType;
-  groupId: number | null;
+  groupId: string | null;
 }
 
 export interface CreatePropertyDTO {
   name: string;
   description: string | null;
   type: PropertyType;
-  groupId: number | null;
+  groupId: string | null;
 }
 
 export interface Group {
