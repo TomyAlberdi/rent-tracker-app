@@ -104,7 +104,7 @@ const RecordTransactions = ({
             <TableCell>
               {CalculatedNetIncome >= 0
                 ? `$ ${CalculatedNetIncome.toLocaleString()}`
-                : `- $ ${CalculatedNetIncome.toLocaleString()}`}
+                : `- $ ${Math.abs(CalculatedNetIncome).toLocaleString()}`}
             </TableCell>
           </TableRow>
         </TableFooter>
