@@ -1,5 +1,6 @@
 import GroupAdministration from "@/app/Pages/Group/GroupAdministration";
 import GroupMonthlyChart from "@/components/GroupMonthlyChart";
+import RecordChart from "@/components/RecordChart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupContext } from "@/context/useGroupContext";
-import { type GroupDTO } from "@/lib/interfaces";
+import type { Group } from "@/lib/interfaces";
 import {
   AlertCircleIcon,
   Building2,
@@ -22,10 +23,11 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-const Group = () => {
+const GroupPage = () => {
   const { id } = useParams();
   const { getGroup } = useGroupContext();
-  const [GroupData, setGroupData] = useState<GroupDTO | null>(null);
+
+  const [GroupData, setGroupData] = useState<Group | null>(null);
   const [GroupUpdated, setGroupUpdated] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [RecordDataYear, setRecordDataYear] = useState(2025);
@@ -91,7 +93,12 @@ const Group = () => {
             </h3>
             <div className="flex flex-col gap-2">
               {GroupData.properties?.map((property) => (
-                <Button key={property.id} variant={"outline"} className="text-sm" asChild>
+                <Button
+                  key={property.id}
+                  variant={"outline"}
+                  className="text-sm"
+                  asChild
+                >
                   <Link to={`/property/${property.id}`}>{property.name}</Link>
                 </Button>
               ))}
@@ -121,9 +128,15 @@ const Group = () => {
         </Card>
       </div>
       <div className="h-full w-3/4 flex flex-col">
+        <RecordChart
+          year={RecordDataYear}
+          parentName={GroupData.name}
+          parentId={GroupData.id}
+          parentType={"GROUPED"}
+        />
         <GroupMonthlyChart group={GroupData} year={RecordDataYear} />
       </div>
     </div>
   );
 };
-export default Group;
+export default GroupPage;

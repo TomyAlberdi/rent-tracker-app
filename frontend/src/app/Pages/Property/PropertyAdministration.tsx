@@ -2,7 +2,7 @@ import AddProperty from "@/components/AddProperty";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import { usePropertyContext } from "@/context/usePropertyContext";
-import type { PropertyDTO } from "@/lib/interfaces";
+import type { Property } from "@/lib/interfaces";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { toast } from "sonner";
 interface PropertyAdministrationProps {
   PropertyUpdated: boolean;
   setPropertyUpdated: React.Dispatch<React.SetStateAction<boolean>>;
-  Property: PropertyDTO;
+  Property: Property;
 }
 
 const PropertyAdministration = ({
@@ -36,7 +36,6 @@ const PropertyAdministration = ({
       .finally(() => {
         setLoadingDelete(false);
         navigate("/");
-        window.location.reload()
       });
   };
 

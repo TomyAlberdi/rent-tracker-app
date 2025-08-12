@@ -17,6 +17,9 @@ public class PropertyService {
     private final GroupRepository groupRepository;
 
     public Property createProperty(CreatePropertyDTO dto) {
+        if (dto.getType().equals(Property.PropertyType.GROUPED) && dto.getGroupId() == null) {
+            throw new IllegalStateException("A GROUPED property Group ID field cannot be Null");
+        }
         if (dto.getGroupId() != null && !groupRepository.existsById(dto.getGroupId())) {
             throw new ResourceNotFoundException("Group not found with ID: " + dto.getGroupId());
         }
@@ -32,6 +35,9 @@ public class PropertyService {
     public Property updateProperty(String id, CreatePropertyDTO dto) {
         Property existing = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found with ID: " + id));
+        if (dto.getType().equals(Property.PropertyType.GROUPED) && dto.getGroupId() == null) {
+            throw new IllegalStateException("A GROUPED property Group ID field cannot be Null");
+        }
         if (dto.getGroupId() != null && !groupRepository.existsById(dto.getGroupId())) {
             throw new ResourceNotFoundException("Group not found with ID: " + dto.getGroupId());
         }

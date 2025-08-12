@@ -15,6 +15,7 @@ public class Transaction {
     private String description;
     private Double amount;
     private TransactionType type;
+    private String metaPropertyId;
     
     public enum TransactionType {
         INCOME,

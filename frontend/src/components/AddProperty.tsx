@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useGroupContext } from "@/context/useGroupContext";
 import { usePropertyContext } from "@/context/usePropertyContext";
-import type { IdNameItem, PropertyDTO } from "@/lib/interfaces";
+import type { CreatePropertyDTO, IdNameItem, Property } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus, PencilLine } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,13 +34,13 @@ import z from "zod";
 interface AddPropertyProps {
   PropertyCreated?: boolean;
   setPropertyCreated?: React.Dispatch<React.SetStateAction<boolean>>;
-  DefaultProperty?: PropertyDTO;
+  DefaultProperty?: Property;
 }
 
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
   description: z.string().optional(),
-  groupId: z.string().optional().nullable(),
+  groupId: z.string().nullable(),
 });
 
 const AddProperty = ({
@@ -64,33 +64,35 @@ const AddProperty = ({
     defaultValues: {
       name: DefaultProperty?.name || "",
       description: DefaultProperty?.description || "",
-      groupId: DefaultProperty?.groupId?.toString() || "none",
+      groupId: DefaultProperty?.groupId || null,
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
     setLoading(true);
+    const data: CreatePropertyDTO = {
+      name: values.name,
+      description: values.description || null,
+      type:
+        values.groupId == undefined || values.groupId == "none"
+          ? "INDIVIDUAL"
+          : "GROUPED",
+      groupId:
+        values.groupId == undefined || values.groupId == "none"
+          ? null
+          : values.groupId,
+    };
+    console.log(data);
     if (DefaultProperty) {
-      updateProperty(
-        DefaultProperty.id,
-        values.name,
-        values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
-        values.description,
-        values.groupId !== "none" ? Number(values.groupId) : null
-      ).finally(() => {
+      updateProperty(DefaultProperty.id, data).finally(() => {
         form.reset();
         setLoading(false);
         window.location.reload();
         setDialogOpen(false);
       });
     } else {
-      createProperty(
-        values.name,
-        values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
-        values.description,
-        values.groupId !== "none" ? Number(values.groupId) : null
-      ).finally(() => {
+      createProperty(data).finally(() => {
         form.reset();
         setLoading(false);
         if (setPropertyCreated) {
@@ -162,9 +164,7 @@ const AddProperty = ({
                     <FormLabel>Grupo</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={
-                        DefaultProperty?.groupId?.toString() || "none"
-                      }
+                      defaultValue={DefaultProperty?.groupId || undefined}
                       disabled={DropdownGroups.length === 0}
                     >
                       <FormControl>
@@ -173,14 +173,8 @@ const AddProperty = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem key="none" value="none">
-                          Sin grupo
-                        </SelectItem>
                         {DropdownGroups.map((group) => (
-                          <SelectItem
-                            key={group.id}
-                            value={group.id.toString()}
-                          >
+                          <SelectItem key={group.id} value={group.id}>
                             {group.name}
                           </SelectItem>
                         ))}

@@ -1,5 +1,5 @@
 import { RecordContext, type RecordContextType } from "@/context/RecordContext";
-import type { CreateRecordDTO } from "@/lib/interfaces";
+import type { CreateRecordDTO, PropertyType } from "@/lib/interfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -12,9 +12,13 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
 }) => {
   const BASE_URL = "http://localhost:8081";
 
-  const getRecords = async (propertyId: number, year: number) => {
+  const getRecords = async (
+    type: PropertyType,
+    parentId: string,
+    year: number
+  ) => {
     try {
-      const url = `${BASE_URL}/record?propertyId=${propertyId}&year=${year}`;
+      const url = `${BASE_URL}/record?type=${type}&parentId=${parentId}&year=${year}`;
       const res = await fetch(url);
       if (!res.ok) {
         console.warn("No records found: ", res);
@@ -53,7 +57,7 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
     }
   };
 
-  const deleteRecord = async (id: number) => {
+  const deleteRecord = async (id: string) => {
     try {
       const response = await fetch(`${BASE_URL}/record/${id}`, {
         method: "DELETE",

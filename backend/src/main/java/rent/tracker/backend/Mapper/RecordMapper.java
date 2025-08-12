@@ -11,6 +11,17 @@ public class RecordMapper {
         return record;
     }
     
+    public static CreateRecordDTO toDTO(Record record) {
+        CreateRecordDTO dto = new CreateRecordDTO();
+        dto.setId(record.getId());
+        dto.setType(record.getType());
+        dto.setParentId(record.getParentId());
+        dto.setMonth(record.getMonth());
+        dto.setYear(record.getYear());
+        dto.setTransactions(record.getTransactions());
+        return dto;
+    }
+    
     public static void updateFromDTO(Record record, CreateRecordDTO dto) {
         record.setType(dto.getType());
         record.setParentId(dto.getParentId());

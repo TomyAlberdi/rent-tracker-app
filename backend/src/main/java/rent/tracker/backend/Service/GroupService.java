@@ -13,6 +13,7 @@ import rent.tracker.backend.Mapper.GroupMapper;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 import java.util.List;
+import java.util.Properties;
 
 @Service
 @AllArgsConstructor
@@ -25,6 +26,16 @@ public class GroupService {
         return groupRepository.findAll()
                 .stream()
                 .map(g -> new LightGroupDTO(g.getId(), g.getName()))
+                .toList();
+    }
+    
+    public List<GroupDTO> getGroups() {
+        return groupRepository.findAll()
+                .stream()
+                .map(g -> {
+                    List<Property> properties = propertyRepository.findByGroupId(g.getId());
+                    return GroupMapper.toDTO(g, properties);
+                })
                 .toList();
     }
     

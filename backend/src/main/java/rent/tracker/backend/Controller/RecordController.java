@@ -20,7 +20,6 @@ public class RecordController {
             @RequestParam String parentId,
             @RequestParam int year
     ) {
-        //TODO: make return by GROUPED also return all records of properties with the group ID
         return ResponseEntity.ok(recordService.getByParentIdAndYear(type, parentId, year));
     }
 

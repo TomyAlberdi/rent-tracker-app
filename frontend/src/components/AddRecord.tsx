@@ -1,6 +1,5 @@
-import RecordExpenses from "@/components/RecordExpenses";
+import RecordTransactions from "@/components/RecordTransactions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -9,14 +8,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRecordContext } from "@/context/useRecordContext";
-import type { CreateRecordDTO, RecordDTO } from "@/lib/interfaces";
-import { getMonthName, getTotalExpenses } from "@/lib/utils";
+import type { CreateRecordDTO, Record, Transaction } from "@/lib/interfaces";
+import { getMonthName } from "@/lib/utils";
 import { CircleSlash, FileCheck, PencilLine, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface AddRecordProps {
-  record: RecordDTO;
+  record: Record;
 }
 
 const AddRecord = ({ record }: AddRecordProps) => {
@@ -25,43 +24,67 @@ const AddRecord = ({ record }: AddRecordProps) => {
   const [Editing, setEditing] = useState(false);
   const [Loading, setLoading] = useState(false);
   const [Record, setRecord] = useState<CreateRecordDTO>({
-    propertyId: record.propertyId,
+    id: record.id,
+    type: record.type,
+    parentId: record.parentId,
     month: record.month,
     year: record.year,
-    income: record.income,
-    expenses: record.expenses ? [...record.expenses] : [],
+    transactions: record.transactions,
   });
+  const [CalculatedTotalIncome, setCalculatedTotalIncome] = useState(
+    record.totalIncome
+  );
+  const [CalculatedTotalExpenses, setCalculatedTotalExpenses] = useState(
+    record.totalExpenses
+  );
   const [CalculatedNetIncome, setCalculatedNetIncome] = useState(
     record.netIncome
   );
 
   useEffect(() => {
-    setCalculatedNetIncome(Record.income - getTotalExpenses(Record.expenses));
-  }, [Record.income, Record.expenses]);
+    const totalIncome = Record.transactions.reduce(
+      (acc, curr) => (curr.type === "INCOME" ? acc + curr.amount : acc),
+      0
+    );
+    setCalculatedTotalIncome(totalIncome);
+    const totalExpenses = Record.transactions.reduce(
+      (acc, curr) => (curr.type === "EXPENSE" ? acc + curr.amount : acc),
+      0
+    );
+    setCalculatedTotalExpenses(totalExpenses);
+    setCalculatedNetIncome(totalIncome - totalExpenses);
+  }, [Record.transactions]);
 
   const resetRecord = () => {
     setRecord({
-      propertyId: record.propertyId,
+      id: record.id || null,
+      type: record.type,
+      parentId: record.parentId,
       month: record.month,
       year: record.year,
-      income: record.income,
-      expenses: record.expenses ? [...record.expenses] : [],
+      transactions: record.transactions,
     });
+  };
+
+  const checkRecord = (record: CreateRecordDTO) => {
+    const transactionsWithoutId = (Record.transactions as Transaction[]).map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ temporalId, ...rest }) => rest
+    );
+    return {
+      ...record,
+      transactions: transactionsWithoutId,
+    };
   };
 
   const onSubmit = () => {
     setLoading(true);
-    const recordToSave = {
-      ...Record,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      expenses: Record.expenses.map(({ id, ...rest }) => rest),
-    };
-    saveRecord(recordToSave)
-      .finally(() => {
-        setLoading(false);
-        setEditing(false);
+    const transactionsWithoutId = checkRecord(Record);
+    if (transactionsWithoutId) {
+      saveRecord(transactionsWithoutId).finally(() => {
         window.location.reload();
       });
+    }
   };
 
   const handleDeleteClick = () => {
@@ -79,7 +102,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center">
+    <div className="w-full flex justify-center items-center">
       <div className="flex flex-col gap-4 w-full">
         <div className="flex justify-center items-center gap-4 w-full">
           <article className="w-full">
@@ -95,7 +118,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
                 <SelectValue placeholder="Seleccione un año" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 10 }, (_, i) => i + 2025).map((year) => (
+                {Array.from({ length: 10 }, (_, i) => i + (2025 - 4)).map((year) => (
                   <SelectItem key={year} value={year.toString()}>
                     {year}
                   </SelectItem>
@@ -125,38 +148,14 @@ const AddRecord = ({ record }: AddRecordProps) => {
             </Select>
           </article>
         </div>
-        <article className="w-full">
-          <span>Ingresos</span>
-          <Input
-            min={0}
-            type="number"
-            className="w-1/2"
-            placeholder="Ingresos"
-            value={Record.income}
-            disabled={Loading || !Editing}
-            onChange={(e) =>
-              setRecord((prev) => ({
-                ...prev,
-                income: Number(e.target.value),
-              }))
-            }
-          />
-        </article>
-        <RecordExpenses
+        <RecordTransactions
           Record={Record}
           setRecord={setRecord}
           editing={Editing}
+          CalculatedTotalIncome={CalculatedTotalIncome}
+          CalculatedTotalExpenses={CalculatedTotalExpenses}
+          CalculatedNetIncome={CalculatedNetIncome}
         />
-        <div className="w-full text-center">
-          <h2 className="alternate-font flex flex-col">
-            Ingreso neto
-            <span className="text-xl font-semibold">
-              {CalculatedNetIncome >= 0
-                ? `$ ${CalculatedNetIncome}`
-                : `- $ ${Math.abs(CalculatedNetIncome)}`}
-            </span>
-          </h2>
-        </div>
         <div className="w-full flex justify-center items-center gap-2">
           {Editing ? (
             <>
