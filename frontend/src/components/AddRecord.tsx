@@ -118,7 +118,7 @@ const AddRecord = ({ record }: AddRecordProps) => {
                 <SelectValue placeholder="Seleccione un año" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 10 }, (_, i) => i + 2025).map((year) => (
+                {Array.from({ length: 10 }, (_, i) => i + (2025 - 4)).map((year) => (
                   <SelectItem key={year} value={year.toString()}>
                     {year}
                   </SelectItem>
