@@ -74,9 +74,16 @@ const AddProperty = ({
     const data: CreatePropertyDTO = {
       name: values.name,
       description: values.description || null,
-      type: values.groupId !== "none" ? "GROUPED" : "INDIVIDUAL",
-      groupId: values.groupId !== "none" ? values.groupId : null,
+      type:
+        values.groupId == undefined || values.groupId == "none"
+          ? "INDIVIDUAL"
+          : "GROUPED",
+      groupId:
+        values.groupId == undefined || values.groupId == "none"
+          ? null
+          : values.groupId,
     };
+    console.log(data);
     if (DefaultProperty) {
       updateProperty(DefaultProperty.id, data).finally(() => {
         form.reset();
@@ -157,7 +164,7 @@ const AddProperty = ({
                     <FormLabel>Grupo</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={DefaultProperty?.groupId || "none"}
+                      defaultValue={DefaultProperty?.groupId || undefined}
                       disabled={DropdownGroups.length === 0}
                     >
                       <FormControl>
@@ -166,9 +173,6 @@ const AddProperty = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem key="none" value="none">
-                          Sin grupo
-                        </SelectItem>
                         {DropdownGroups.map((group) => (
                           <SelectItem key={group.id} value={group.id}>
                             {group.name}
