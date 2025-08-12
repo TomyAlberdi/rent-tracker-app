@@ -16,15 +16,9 @@ import { toast } from "sonner";
 
 interface AddRecordProps {
   record: Record;
-  UpdateRecords: boolean;
-  setUpdateRecords: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AddRecord = ({
-  record,
-  UpdateRecords,
-  setUpdateRecords,
-}: AddRecordProps) => {
+const AddRecord = ({ record }: AddRecordProps) => {
   const { saveRecord, deleteRecord } = useRecordContext();
 
   const [Editing, setEditing] = useState(false);
@@ -88,9 +82,7 @@ const AddRecord = ({
     const transactionsWithoutId = checkRecord(Record);
     if (transactionsWithoutId) {
       saveRecord(transactionsWithoutId).finally(() => {
-        setLoading(false);
-        setEditing(false);
-        setUpdateRecords(!UpdateRecords);
+        window.location.reload();
       });
     }
   };
@@ -105,7 +97,7 @@ const AddRecord = ({
   const handleDelete = async () => {
     if (!record.id) return;
     deleteRecord(record.id).finally(() => {
-      setUpdateRecords(!UpdateRecords);
+      window.location.reload();
     });
   };
 

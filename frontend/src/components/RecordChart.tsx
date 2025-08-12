@@ -61,7 +61,6 @@ const RecordChart = ({
   const [DialogOpen, setDialogOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [Records, setRecords] = useState<Record[]>([]);
-  const [UpdateRecords, setUpdateRecords] = useState(false);
   const [SelectedRecord, setSelectedRecord] = useState<Record | null>(null);
 
   const fillRecords = useCallback(
@@ -109,7 +108,7 @@ const RecordChart = ({
     };
     fetchPropertyRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parentId, year, UpdateRecords]);
+  }, [parentId, year]);
 
   useEffect(() => {
     const selectedRecord = Records.find((r) => r.month === selectedMonth);
@@ -185,13 +184,7 @@ const RecordChart = ({
               </Button>
             </DialogTitle>
           </DialogHeader>
-          {SelectedRecord && (
-            <AddRecord
-              record={SelectedRecord}
-              UpdateRecords={UpdateRecords}
-              setUpdateRecords={setUpdateRecords}
-            />
-          )}
+          {SelectedRecord && <AddRecord record={SelectedRecord} />}
         </DialogContent>
       </Dialog>
     </>

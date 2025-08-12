@@ -14,6 +14,7 @@ import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 import rent.tracker.backend.Repository.RecordRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public class RecordService {
     
     private final RecordRepository recordRepository;
     private final PropertyRepository propertyRepository;
+    private final PropertyService propertyService;
     private final GroupRepository groupRepository;
     
     public List<Record> getByParentIdAndYear(Property.PropertyType type, String parentId, Integer year) {
@@ -33,22 +35,104 @@ public class RecordService {
     @Transactional
     public Record save(CreateRecordDTO recordDTO) {
         checkParentExists(recordDTO.getType(), recordDTO.getParentId());
+        Record savedRecord;
         if (recordDTO.getId() == null) {
             Record newRecord = RecordMapper.toEntity(recordDTO);
             calculateAmounts(newRecord);
-            return recordRepository.save(newRecord);
+            savedRecord = recordRepository.save(newRecord);
+        } else {
+            Record record = recordRepository.findById(recordDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Record with id " + recordDTO.getId() + " not found"));
+            RecordMapper.updateFromDTO(record, recordDTO);
+            calculateAmounts(record);
+            savedRecord = recordRepository.save(record);
         }
-        Record record = recordRepository.findById(recordDTO.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Record with id " + recordDTO.getId() + " not found"));
-        RecordMapper.updateFromDTO(record, recordDTO);
-        calculateAmounts(record);
-        return recordRepository.save(record);
+        syncPropertyRecordToGroupRecord(savedRecord);
+        return savedRecord;
     }
     
+    @Transactional
     public void delete(String id) {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Record with id " + id + " not found"));
+        removePropertyRecordFromGroupRecord(record);
         recordRepository.delete(record);
+    }
+    
+    private Transaction createSummaryTransaction(Transaction.TransactionType type, String propertyId, String propertyName, Double amount) {
+        Transaction t = new Transaction();
+        String prefix = (type == Transaction.TransactionType.INCOME) ? "INGRESOS" : "GASTOS";
+        t.setTitle(prefix + " " + propertyName);
+        t.setAmount(amount == null ? 0 : amount);
+        t.setType(type);
+        t.setMetaPropertyId(propertyId);
+        return t;
+    }
+    
+    @Transactional
+    protected void syncPropertyRecordToGroupRecord(Record propertyRecord) {
+        if (propertyRecord.getType() != Property.PropertyType.INDIVIDUAL) {
+            return;
+        }
+        Property property = propertyService.getPropertyById(propertyRecord.getParentId());
+        if (property.getGroupId() == null) {
+            return; // Property is not part of a group, nothing to sync
+        }
+        
+        Record groupRecord = recordRepository
+                .findByTypeAndParentIdAndMonthAndYear(Property.PropertyType.GROUPED, property.getGroupId(), propertyRecord.getMonth(), propertyRecord.getYear())
+                .orElseGet(() -> {
+                    Record newGroupRecord = new Record();
+                    newGroupRecord.setType(Property.PropertyType.GROUPED);
+                    newGroupRecord.setParentId(property.getGroupId());
+                    newGroupRecord.setYear(propertyRecord.getYear());
+                    newGroupRecord.setMonth(propertyRecord.getMonth());
+                    newGroupRecord.setTransactions(new ArrayList<>());
+                    return newGroupRecord;
+                });
+        
+        groupRecord.getTransactions()
+                .removeIf(t -> property.getId().equals(t.getMetaPropertyId()));
+        
+        double income = sumAmounts(Transaction.TransactionType.INCOME, propertyRecord.getTransactions());
+        double expenses = sumAmounts(Transaction.TransactionType.EXPENSE, propertyRecord.getTransactions());
+        
+        if (income > 0) {
+            Transaction incomeSummary = createSummaryTransaction(Transaction.TransactionType.INCOME, property.getId(), property.getName(), income);
+            groupRecord.getTransactions().add(incomeSummary);
+        }
+        
+        if (expenses > 0) {
+            Transaction expenseSummary = createSummaryTransaction(Transaction.TransactionType.EXPENSE, property.getId(), property.getName(), income);
+            groupRecord.getTransactions().add(expenseSummary);
+        }
+        
+        calculateAmounts(groupRecord);
+        this.save(RecordMapper.toDTO(groupRecord));
+    }
+    
+    @Transactional
+    protected void removePropertyRecordFromGroupRecord(Record propertyRecord) {
+        if (propertyRecord.getType() != Property.PropertyType.INDIVIDUAL) {
+            return;
+        }
+        Property property = propertyService.getPropertyById(propertyRecord.getParentId());
+        if (property.getGroupId() == null) {
+            return;
+        }
+        
+        Optional<Record> optionalGroupRecord = recordRepository
+                .findByTypeAndParentIdAndMonthAndYear(Property.PropertyType.GROUPED, property.getGroupId(), propertyRecord.getMonth(), propertyRecord.getYear());
+        if (optionalGroupRecord.isEmpty()) {
+            return;
+        }
+        Record groupRecord = optionalGroupRecord.get();
+        boolean removed = groupRecord.getTransactions()
+                .removeIf(t -> property.getId().equals(t.getMetaPropertyId()));
+        if (removed) {
+            calculateAmounts(groupRecord);
+            this.save(RecordMapper.toDTO(groupRecord));
+        }
     }
     
     public void checkParentExists(Property.PropertyType type, String parentId) {
