@@ -5,9 +5,9 @@ import rent.tracker.backend.Model.Record;
 
 public class RecordMapper {
     
-    public static Record toEntity(CreateRecordDTO dto) {
+    public static Record toEntity(CreateRecordDTO dto, String parentName) {
         Record record = new Record();
-        updateFromDTO(record, dto);
+        updateFromDTO(record, dto, parentName);
         return record;
     }
     
@@ -22,9 +22,10 @@ public class RecordMapper {
         return dto;
     }
     
-    public static void updateFromDTO(Record record, CreateRecordDTO dto) {
+    public static void updateFromDTO(Record record, CreateRecordDTO dto, String parentName) {
         record.setType(dto.getType());
         record.setParentId(dto.getParentId());
+        record.setParentName(parentName);
         record.setMonth(dto.getMonth());
         record.setYear(dto.getYear());
         record.setTransactions(dto.getTransactions());

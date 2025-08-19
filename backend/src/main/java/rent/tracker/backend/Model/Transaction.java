@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,7 +15,7 @@ public class Transaction {
     
     private String title;
     private String description;
-    private Double amount;
+    private BigDecimal amount;
     private TransactionType type;
     private String metaPropertyId;
     
