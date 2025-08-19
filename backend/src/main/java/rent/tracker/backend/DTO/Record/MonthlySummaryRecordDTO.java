@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
-public class MonthlyTotalSummaryRecordDTO {
+public class MonthlySummaryRecordDTO {
     private Integer month;
     private Integer year;
     private BigDecimal totalIncome;

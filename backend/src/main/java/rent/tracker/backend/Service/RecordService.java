@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rent.tracker.backend.DTO.Record.CreateRecordDTO;
-import rent.tracker.backend.DTO.Record.MonthlyTotalSummaryRecordDTO;
+import rent.tracker.backend.DTO.Record.MonthlySummaryRecordDTO;
 import rent.tracker.backend.DTO.Record.YearlyParentSummaryRecordDTO;
 import rent.tracker.backend.Exception.ResourceNotFoundException;
 import rent.tracker.backend.Mapper.RecordMapper;
@@ -132,11 +132,11 @@ public class RecordService {
         }
     }
     
-    public List<MonthlyTotalSummaryRecordDTO> getYearlySummary(Integer year) {
+    public List<MonthlySummaryRecordDTO> getYearlySummary(Integer year) {
         List<Record> yearlyRecords = recordRepository.findAllByYearOrderByMonth(year);
-        Map<Integer, MonthlyTotalSummaryRecordDTO> summaryMap = getMonthlySummary(year);
+        Map<Integer, MonthlySummaryRecordDTO> summaryMap = getMonthlySummary(year);
         for (Record record: yearlyRecords) {
-            MonthlyTotalSummaryRecordDTO summary = summaryMap.get(record.getMonth());
+            MonthlySummaryRecordDTO summary = summaryMap.get(record.getMonth());
             if (summary != null) {
                 summary.setTotalIncome(summary.getTotalIncome().add(record.getTotalIncome() != null ? record.getTotalIncome() : BigDecimal.ZERO));
                 summary.setTotalExpense(summary.getTotalExpense().add(record.getTotalExpense() != null ? record.getTotalExpense() : BigDecimal.ZERO));
@@ -216,10 +216,10 @@ public class RecordService {
         record.setNetIncome(netIncome);
     }
     
-    public Map<Integer, MonthlyTotalSummaryRecordDTO> getMonthlySummary(Integer year) {
-        Map<Integer, MonthlyTotalSummaryRecordDTO> summaryMap = new HashMap<>();
+    public Map<Integer, MonthlySummaryRecordDTO> getMonthlySummary(Integer year) {
+        Map<Integer, MonthlySummaryRecordDTO> summaryMap = new HashMap<>();
         for (int month = 1; month <= 12; month++) {
-            MonthlyTotalSummaryRecordDTO summary = new MonthlyTotalSummaryRecordDTO();
+            MonthlySummaryRecordDTO summary = new MonthlySummaryRecordDTO();
             summary.setMonth(month);
             summary.setYear(year);
             summary.setTotalIncome(BigDecimal.ZERO);
