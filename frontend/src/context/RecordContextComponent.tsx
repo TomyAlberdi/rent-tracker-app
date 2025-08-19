@@ -96,7 +96,7 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
 
   const getParentSummary = async (year: number, parentType: PropertyType) => {
     try {
-      const url = `${BASE_URL}/record/ParentSummary/${year}&type=${parentType}`;
+      const url = `${BASE_URL}/record/ParentSummary/${year}?type=${parentType}`;
       const res = await fetch(url);
       if (!res.ok) {
         console.warn("No records found: ", res);

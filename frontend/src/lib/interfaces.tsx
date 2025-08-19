@@ -69,6 +69,8 @@ export interface MonthlySummaryRecordDTO {
   totalIncome: number;
   totalExpenses: number;
   netIncome: number;
+  // internal fields (not stored in database)
+  monthName?: string | null;
 }
 
 export interface ParentSummaryRecordDTO {
@@ -77,6 +79,8 @@ export interface ParentSummaryRecordDTO {
   parentType: PropertyType;
   parentId: string;
   parentName: string;
+  // internal fields (not stored in database)
+  fillColor?: string;
 }
 
 export type PropertyType = 'INDIVIDUAL' | 'GROUPED';
