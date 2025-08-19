@@ -132,9 +132,9 @@ public class RecordService {
         }
     }
     
-    public List<MonthlySummaryRecordDTO> getYearlySummary(Integer year) {
+    public List<MonthlySummaryRecordDTO> getMonthlySummary(Integer year) {
         List<Record> yearlyRecords = recordRepository.findAllByYearOrderByMonth(year);
-        Map<Integer, MonthlySummaryRecordDTO> summaryMap = getMonthlySummary(year);
+        Map<Integer, MonthlySummaryRecordDTO> summaryMap = getEmptyMonthlySummary(year);
         for (Record record: yearlyRecords) {
             MonthlySummaryRecordDTO summary = summaryMap.get(record.getMonth());
             if (summary != null) {
@@ -175,12 +175,7 @@ public class RecordService {
                     .map(YearlyParentSummaryRecordDTO::getNetIncome)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            YearlyParentSummaryRecordDTO othersSummary = new YearlyParentSummaryRecordDTO();
-            othersSummary.setYear(year);
-            othersSummary.setParentType(type);
-            othersSummary.setParentId(null);
-            othersSummary.setParentName("Otros");
-            othersSummary.setNetIncome(otherNetIncome);
+            YearlyParentSummaryRecordDTO othersSummary = createOthersSummary(year, type, otherNetIncome);
             result.add(othersSummary);
         }
         return result;
@@ -216,7 +211,7 @@ public class RecordService {
         record.setNetIncome(netIncome);
     }
     
-    public Map<Integer, MonthlySummaryRecordDTO> getMonthlySummary(Integer year) {
+    public Map<Integer, MonthlySummaryRecordDTO> getEmptyMonthlySummary(Integer year) {
         Map<Integer, MonthlySummaryRecordDTO> summaryMap = new HashMap<>();
         for (int month = 1; month <= 12; month++) {
             MonthlySummaryRecordDTO summary = new MonthlySummaryRecordDTO();
