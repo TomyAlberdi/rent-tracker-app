@@ -8,6 +8,7 @@ import { useRecordContext } from "@/context/useRecordContext";
 import type { ParentSummaryRecordDTO, PropertyType } from "@/lib/interfaces";
 import { getFillColor } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Pie, PieChart } from "recharts";
 
 interface ParentSummaryCardProps {
@@ -24,6 +25,7 @@ interface ChartConfigType {
 
 const ParentSummaryCard = ({ type, year }: ParentSummaryCardProps) => {
   const { getParentSummary } = useRecordContext();
+  const navigate = useNavigate();
 
   const [ParentData, setParentData] = useState<ParentSummaryRecordDTO[]>([]);
 
@@ -31,7 +33,7 @@ const ParentSummaryCard = ({ type, year }: ParentSummaryCardProps) => {
     return data.map((record, index) => {
       return {
         ...record,
-        fillColor: getFillColor(index),
+        fill: getFillColor(index),
       };
     });
   }, []);
@@ -52,13 +54,29 @@ const ParentSummaryCard = ({ type, year }: ParentSummaryCardProps) => {
     ParentData.forEach((record) => {
       newConfig[record.parentName] = {
         label: record.parentName,
-        color: record.fillColor || "",
+        color: record.fill || "var(--chart-1)",
       };
     });
     setChartConfig(newConfig);
+    console.log(newConfig)
   }, [ParentData]);
 
-  //FIXME: fill color is not working
+  const handlePieClick = useCallback(
+    (payloadOrWrapper: ParentSummaryRecordDTO | { payload?: ParentSummaryRecordDTO }) => {
+      const isWrapper = (p: unknown): p is { payload?: ParentSummaryRecordDTO } =>
+        typeof p === "object" && p !== null && "payload" in (p as object);
+
+      const record = isWrapper(payloadOrWrapper)
+        ? payloadOrWrapper.payload
+        : (payloadOrWrapper as ParentSummaryRecordDTO);
+
+      const parentId = record?.parentId;
+      if (!parentId) return;
+      const route = type === "INDIVIDUAL" ? `/property/${parentId}` : `/group/${parentId}`;
+      navigate(route);
+    },
+    [navigate, type]
+  );
   return (
     <Card className="w-full h-1/2">
       <CardHeader>
@@ -68,13 +86,13 @@ const ParentSummaryCard = ({ type, year }: ParentSummaryCardProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="h-full flex justify-center items-center">
-        <ChartContainer config={ChartConfig}>
+        <ChartContainer config={ChartConfig} className="h-full">
           <PieChart>
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Pie data={ParentData} dataKey="netIncome" nameKey="parentName" />
+            <Pie data={ParentData} dataKey="netIncome" nameKey="parentName" onClick={handlePieClick} className="cursor-pointer" />
           </PieChart>
         </ChartContainer>
       </CardContent>

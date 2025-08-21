@@ -167,11 +167,11 @@ public class RecordService {
         sorted.sort(Comparator.comparing(YearlyParentSummaryRecordDTO::getNetIncome).reversed());
         
         List<YearlyParentSummaryRecordDTO> result = new ArrayList<>();
-        if (sorted.size() <= 6) {
+        if (sorted.size() <= 9) {
             result.addAll(sorted);
         } else {
-            result.addAll(sorted.subList(0, 6));
-            BigDecimal otherNetIncome = sorted.subList(6, sorted.size()).stream()
+            result.addAll(sorted.subList(0, 9));
+            BigDecimal otherNetIncome = sorted.subList(9, sorted.size()).stream()
                     .map(YearlyParentSummaryRecordDTO::getNetIncome)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);

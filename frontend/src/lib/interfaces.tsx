@@ -80,7 +80,7 @@ export interface ParentSummaryRecordDTO {
   parentId: string;
   parentName: string;
   // internal fields (not stored in database)
-  fillColor?: string;
+  fill?: string;
 }
 
 export type PropertyType = 'INDIVIDUAL' | 'GROUPED';
