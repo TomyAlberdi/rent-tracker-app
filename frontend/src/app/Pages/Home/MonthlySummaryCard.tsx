@@ -61,7 +61,7 @@ const MonthlySummaryCard = ({ year }: MonthlySummaryCardProps) => {
     <Card className="w-full h-full">
       <CardHeader>
         <CardTitle className="text-2xl">
-          Ingresos y gastos totales del año {year}
+          Ingresos y Gastos Anuales Totales
         </CardTitle>
       </CardHeader>
       <CardContent>

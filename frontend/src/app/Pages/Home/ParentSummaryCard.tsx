@@ -81,8 +81,7 @@ const ParentSummaryCard = ({ type, year }: ParentSummaryCardProps) => {
     <Card className="w-full h-1/2">
       <CardHeader>
         <CardTitle className="text-xl">
-          Ingresos Netos por {type === "INDIVIDUAL" ? "Propiedad" : "Grupo"} en{" "}
-          {year}
+          Ingresos Anuales Netos por {type === "INDIVIDUAL" ? "Propiedad" : "Grupo"}
         </CardTitle>
       </CardHeader>
       <CardContent className="h-full flex justify-center items-center">
