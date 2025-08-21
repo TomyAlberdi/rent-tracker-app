@@ -1,5 +1,6 @@
 import MobileFallback from "@/app/Pages/Error/MobileFallback";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -7,9 +8,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Outlet } from "react-router-dom";
+import { ChevronsLeft } from "lucide-react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Page() {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -27,6 +30,9 @@ export default function Page() {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
+            <Button onClick={() => navigate(-1)} className="h-full">
+              <ChevronsLeft />
+            </Button>
           </div>
         </header>
         <div className="page-full-h overflow-x-hidden px-4 custom-sidebar">
