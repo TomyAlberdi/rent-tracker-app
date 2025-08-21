@@ -24,8 +24,12 @@ export function NavGroup({ items }: { items: Group[] }) {
     <SidebarGroup>
       <SidebarGroupLabel>Grupos</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible key={item.id} asChild defaultOpen={true}>
+        {items.map((item, index) => (
+          <Collapsible
+            key={item.id}
+            asChild
+            defaultOpen={index === 0 ? true : false}
+          >
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.name}>
                 <Link to={`/group/${item.id}`}>

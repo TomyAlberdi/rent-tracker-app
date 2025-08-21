@@ -34,5 +34,18 @@ public class RecordController {
         return ResponseEntity.ok().build();
     }
     
+    @GetMapping("/MonthlySummary/{year}")
+    public ResponseEntity<?> getMonthlySummary(@PathVariable Integer year) {
+        return ResponseEntity.ok(recordService.getMonthlySummary(year));
+    }
+    
+    @GetMapping("/ParentSummary/{year}")
+    public ResponseEntity<?> getParentSummary(
+            @RequestParam Property.PropertyType type,
+            @PathVariable Integer year
+    ) {
+       return ResponseEntity.ok(recordService.getParentSummaryRecord(year, type));
+    }
+    
     
 }

@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface RecordRepository extends MongoRepository<Record, String> {
     List<Record> findAllByParentIdAndYear(String parentId, Integer year);
     Optional<Record> findByTypeAndParentIdAndMonthAndYear(Property.PropertyType type, String parentId, Integer month, Integer year);
+    List<Record> findAllByYearOrderByMonth(Integer year);
+    List<Record> findAllByYearAndTypeOrderByParentName(Integer year, Property.PropertyType type);
 }

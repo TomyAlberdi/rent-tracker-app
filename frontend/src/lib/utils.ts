@@ -35,3 +35,9 @@ export function getMonthName(month: number) {
       return "";
   }
 }
+
+export function getFillColor(index: number) {
+  if (index + 1 <= 10) {
+    return `var(--chart-${index + 1})`;
+  }
+}

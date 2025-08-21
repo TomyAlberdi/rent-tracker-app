@@ -63,6 +63,26 @@ export interface Transaction {
   temporalId?: string;
 }
 
+export interface MonthlySummaryRecordDTO {
+  month: number;
+  year: number;
+  totalIncome: number;
+  totalExpenses: number;
+  netIncome: number;
+  // internal fields (not stored in database)
+  monthName?: string | null;
+}
+
+export interface ParentSummaryRecordDTO {
+  year: number;
+  netIncome: number;
+  parentType: PropertyType;
+  parentId: string;
+  parentName: string;
+  // internal fields (not stored in database)
+  fill?: string;
+}
+
 export type PropertyType = 'INDIVIDUAL' | 'GROUPED';
 
 export type ExpenseType = 'INCOME' | 'EXPENSE';

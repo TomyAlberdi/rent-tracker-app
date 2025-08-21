@@ -75,10 +75,50 @@ const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
     }
   };
 
+  const getMonthlySummary = async (year: number) => {
+    try {
+      const url = `${BASE_URL}/record/MonthlySummary/${year}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn("No records found: ", res);
+        return [];
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("Failed to fetch records", err);
+      toast.error("No se pudieron recuperar los registros.", {
+        description: "Intentelo nuevamente más tarde.",
+      });
+      return [];
+    }
+  };
+
+  const getParentSummary = async (year: number, parentType: PropertyType) => {
+    try {
+      const url = `${BASE_URL}/record/ParentSummary/${year}?type=${parentType}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn("No records found: ", res);
+        return [];
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("Failed to fetch records", err);
+      toast.error("No se pudieron recuperar los registros.", {
+        description: "Intentelo nuevamente más tarde.",
+      });
+      return [];
+    }
+  };
+
   const exportData: RecordContextType = {
     getRecords,
     saveRecord,
     deleteRecord,
+    getMonthlySummary,
+    getParentSummary,
   };
 
   return (
