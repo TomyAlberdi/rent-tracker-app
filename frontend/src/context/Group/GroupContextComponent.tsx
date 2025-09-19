@@ -1,4 +1,4 @@
-import { GroupContext, type GroupContextType } from "@/context/GroupContext";
+import { GroupContext, type GroupContextType } from "@/context/Group/GroupContext";
 import type { CreateGroupDTO } from "@/lib/interfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
@@ -10,11 +10,11 @@ interface GroupContextComponentProps {
 const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
   children,
 }) => {
-  const BASE_URL = "http://localhost:8081/group";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const getDropdownGroups = async () => {
     try {
-      const url = `${BASE_URL}/list/light`;
+      const url = `${BASE_URL}/group/list/light`;
       const res = await fetch(url);
       if (!res.ok) {
         toast.error("Ocurrió un error al obtener los grupos");
@@ -32,7 +32,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const getGroups = async () => {
     try {
-      const url = `${BASE_URL}/list`;
+      const url = `${BASE_URL}/group/list`;
       const res = await fetch(url);
       if (!res.ok) {
         toast.error("Ocurrió un error al obtener los grupos");
@@ -50,7 +50,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const getGroup = async (groupId: string) => {
     try {
-      const url = `${BASE_URL}/${groupId}`;
+      const url = `${BASE_URL}/group/${groupId}`;
       const res = await fetch(url);
       if (!res.ok) {
         toast.error("Ocurrió un error al obtener el grupo");
@@ -68,7 +68,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const createGroup = async (group: CreateGroupDTO) => {
     try {
-      const response = await fetch(`${BASE_URL}`, {
+      const response = await fetch(`${BASE_URL}/group`, {
         method: "POST",
         body: JSON.stringify(group),
         headers: {
@@ -89,7 +89,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const updateGroup = async (groupId: string, group: CreateGroupDTO) => {
     try {
-      const response = await fetch(`${BASE_URL}/${groupId}`, {
+      const response = await fetch(`${BASE_URL}/group/${groupId}`, {
         method: "PUT",
         body: JSON.stringify(group),
         headers: {
@@ -110,7 +110,7 @@ const GroupContextComponent: React.FC<GroupContextComponentProps> = ({
 
   const deleteGroup = async (groupId: string) => {
     try {
-      const response = await fetch(`${BASE_URL}/${groupId}`, {
+      const response = await fetch(`${BASE_URL}/group/${groupId}`, {
         method: "DELETE",
       });
       if (!response.ok) {

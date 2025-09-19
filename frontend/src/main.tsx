@@ -1,5 +1,5 @@
 import App from "@/App.tsx";
-import GroupContextComponent from "@/context/GroupContextComponent";
+import GroupContextComponent from "@/context/Group/GroupContextComponent";
 import PropertyContextComponent from "@/context/PropertyContextComponent";
 import RecordContextComponent from "@/context/RecordContextComponent";
 import "@/index.css";

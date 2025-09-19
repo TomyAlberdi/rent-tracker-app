@@ -1,7 +1,7 @@
 import CreateGroup from "@/components/CreateGroup";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { useGroupContext } from "@/context/useGroupContext";
+import { useGroupContext } from "@/context/Group/useGroupContext";
 import type { Group } from "@/lib/interfaces";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";

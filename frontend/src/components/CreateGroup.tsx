@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useGroupContext } from "@/context/useGroupContext";
+import { useGroupContext } from "@/context/Group/useGroupContext";
 import type { CreateGroupDTO, Group } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus, PencilLine } from "lucide-react";

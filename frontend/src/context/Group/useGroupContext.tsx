@@ -1,4 +1,4 @@
-import { GroupContext } from "@/context/GroupContext";
+import { GroupContext } from "@/context/Group/GroupContext";
 import { useContext } from "react";
 
 export const useGroupContext = () => {

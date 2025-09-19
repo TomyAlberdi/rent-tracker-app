@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGroupContext } from "@/context/useGroupContext";
+import { useGroupContext } from "@/context/Group/useGroupContext";
 import type { Group } from "@/lib/interfaces";
 import {
   AlertCircleIcon,

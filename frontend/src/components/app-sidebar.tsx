@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useGroupContext } from "@/context/useGroupContext";
+import { useGroupContext } from "@/context/Group/useGroupContext";
 import { usePropertyContext } from "@/context/usePropertyContext";
 import type { Group, Property } from "@/lib/interfaces";
 import { CircleDollarSign } from "lucide-react";

@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGroupContext } from "@/context/useGroupContext";
+import { useGroupContext } from "@/context/Group/useGroupContext";
 import { usePropertyContext } from "@/context/usePropertyContext";
 import type { CreatePropertyDTO, IdNameItem, Property } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
