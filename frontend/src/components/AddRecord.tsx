@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRecordContext } from "@/context/useRecordContext";
+import { useRecordContext } from "@/context/Record/useRecordContext";
 import type { CreateRecordDTO, Record, Transaction } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
 import { CircleSlash, FileCheck, PencilLine, Trash2 } from "lucide-react";

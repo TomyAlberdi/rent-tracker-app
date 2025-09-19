@@ -1,4 +1,4 @@
-import { RecordContext } from "@/context/RecordContext";
+import { RecordContext } from "@/context/Record/RecordContext";
 import { useContext } from "react";
 
 export const useRecordContext = () => {

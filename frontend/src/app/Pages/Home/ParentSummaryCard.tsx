@@ -4,7 +4,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useRecordContext } from "@/context/useRecordContext";
+import { useRecordContext } from "@/context/Record/useRecordContext";
 import type { ParentSummaryRecordDTO, PropertyType } from "@/lib/interfaces";
 import { getFillColor } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";

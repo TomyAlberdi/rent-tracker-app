@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRecordContext } from "@/context/useRecordContext";
+import { useRecordContext } from "@/context/Record/useRecordContext";
 import type { PropertyType, Record, Transaction } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";

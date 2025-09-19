@@ -1,5 +1,5 @@
 import RecordChart from "@/components/RecordChart";
-import { useRecordContext } from "@/context/useRecordContext";
+import { useRecordContext } from "@/context/Record/useRecordContext";
 import type { Group, Record } from "@/lib/interfaces";
 import { useEffect, useState } from "react";
 

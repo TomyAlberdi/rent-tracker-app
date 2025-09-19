@@ -7,7 +7,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { useRecordContext } from "@/context/useRecordContext";
+import { useRecordContext } from "@/context/Record/useRecordContext";
 import type { MonthlySummaryRecordDTO } from "@/lib/interfaces";
 import { getMonthName } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";

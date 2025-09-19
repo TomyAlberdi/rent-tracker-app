@@ -1,7 +1,7 @@
 import App from "@/App.tsx";
 import GroupContextComponent from "@/context/Group/GroupContextComponent";
 import PropertyContextComponent from "@/context/Property/PropertyContextComponent";
-import RecordContextComponent from "@/context/RecordContextComponent";
+import RecordContextComponent from "@/context/Record/RecordContextComponent";
 import "@/index.css";
 import { ThemeProvider } from "@/theme/theme-provider";
 import { createRoot } from "react-dom/client";

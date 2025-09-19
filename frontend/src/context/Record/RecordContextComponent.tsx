@@ -1,4 +1,4 @@
-import { RecordContext, type RecordContextType } from "@/context/RecordContext";
+import { RecordContext, type RecordContextType } from "@/context/Record/RecordContext";
 import type { CreateRecordDTO, PropertyType } from "@/lib/interfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ interface RecordContextComponentProps {
 const RecordContextComponent: React.FC<RecordContextComponentProps> = ({
   children,
 }) => {
-  const BASE_URL = "http://localhost:8081";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const getRecords = async (
     type: PropertyType,
