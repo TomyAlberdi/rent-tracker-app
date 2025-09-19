@@ -1,7 +1,7 @@
 import AddProperty from "@/components/AddProperty";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { usePropertyContext } from "@/context/usePropertyContext";
+import { usePropertyContext } from "@/context/Property/usePropertyContext";
 import type { Property } from "@/lib/interfaces";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";

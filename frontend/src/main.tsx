@@ -1,6 +1,6 @@
 import App from "@/App.tsx";
 import GroupContextComponent from "@/context/Group/GroupContextComponent";
-import PropertyContextComponent from "@/context/PropertyContextComponent";
+import PropertyContextComponent from "@/context/Property/PropertyContextComponent";
 import RecordContextComponent from "@/context/RecordContextComponent";
 import "@/index.css";
 import { ThemeProvider } from "@/theme/theme-provider";

@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { usePropertyContext } from "@/context/usePropertyContext";
+import { usePropertyContext } from "@/context/Property/usePropertyContext";
 import type { Property } from "@/lib/interfaces";
 import {
   AlertCircleIcon,

@@ -1,7 +1,7 @@
 import {
   PropertyContext,
   type PropertyContextType,
-} from "@/context/PropertyContext";
+} from "@/context/Property/PropertyContext";
 import type { CreatePropertyDTO } from "@/lib/interfaces";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
@@ -13,11 +13,11 @@ interface PropertyContextComponentProps {
 const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
   children,
 }) => {
-  const BASE_URL = "http://localhost:8081/property";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const getProperties = async () => {
     try {
-      const res = await fetch(`${BASE_URL}`);
+      const res = await fetch(`${BASE_URL}/property`);
       if (!res.ok) {
         toast.error("Ocurrió un error al obtener las propiedades");
         console.warn("No properties found: ", res);
@@ -34,7 +34,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
 
   const getPropertyById = async (id: string) => {
     try {
-      const res = await fetch(`${BASE_URL}/${id}`);
+      const res = await fetch(`${BASE_URL}/property/${id}`);
       if (!res.ok) {
         toast.error("Ocurrió un error al obtener la propiedad");
         console.warn("No property found: ", res);
@@ -51,7 +51,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
 
   const createProperty = async (property: CreatePropertyDTO) => {
     try {
-      const response = await fetch(`${BASE_URL}`, {
+      const response = await fetch(`${BASE_URL}/property`, {
         method: "POST",
         body: JSON.stringify(property),
         headers: {
@@ -72,7 +72,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
 
   const updateProperty = async (id: string, property: CreatePropertyDTO) => {
     try {
-      const response = await fetch(`${BASE_URL}/${id}`, {
+      const response = await fetch(`${BASE_URL}/property/${id}`, {
         method: "PUT",
         body: JSON.stringify(property),
         headers: {
@@ -93,7 +93,7 @@ const PropertyContextComponent: React.FC<PropertyContextComponentProps> = ({
 
   const deleteProperty = async (id: string) => {
     try {
-      const response = await fetch(`${BASE_URL}/${id}`, {
+      const response = await fetch(`${BASE_URL}/property/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {

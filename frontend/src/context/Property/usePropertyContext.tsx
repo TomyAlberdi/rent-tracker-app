@@ -1,4 +1,4 @@
-import { PropertyContext } from "@/context/PropertyContext";
+import { PropertyContext } from "@/context/Property/PropertyContext";
 import { useContext } from "react";
 
 export const usePropertyContext = () => {

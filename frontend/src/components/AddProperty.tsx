@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGroupContext } from "@/context/Group/useGroupContext";
-import { usePropertyContext } from "@/context/usePropertyContext";
+import { usePropertyContext } from "@/context/Property/usePropertyContext";
 import type { CreatePropertyDTO, IdNameItem, Property } from "@/lib/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CirclePlus, PencilLine } from "lucide-react";
