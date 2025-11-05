@@ -8,6 +8,7 @@ import rent.tracker.backend.Mapper.PropertyMapper;
 import rent.tracker.backend.Model.Property;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
+import rent.tracker.backend.Repository.RecordRepository;
 
 @Service
 @AllArgsConstructor
@@ -15,6 +16,7 @@ public class PropertyService {
 
     private final PropertyRepository propertyRepository;
     private final GroupRepository groupRepository;
+    private final RecordRepository recordRepository;
 
     public Property createProperty(CreatePropertyDTO dto) {
         if (dto.getType().equals(Property.PropertyType.GROUPED) && dto.getGroupId() == null) {
@@ -40,6 +42,9 @@ public class PropertyService {
         }
         if (dto.getGroupId() != null && !groupRepository.existsById(dto.getGroupId())) {
             throw new ResourceNotFoundException("Group not found with ID: " + dto.getGroupId());
+        }
+        if (!existing.getName().equals(dto.getName())) {
+            recordRepository.updateParentNameByParentId(existing.getId(), dto.getName());
         }
         PropertyMapper.updateFromDTO(existing, dto);
         return propertyRepository.save(existing);

@@ -12,6 +12,8 @@ import rent.tracker.backend.Model.Property;
 import rent.tracker.backend.Mapper.GroupMapper;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
+import rent.tracker.backend.Repository.RecordRepository;
+
 import java.util.List;
 import java.util.Properties;
 
@@ -21,6 +23,7 @@ public class GroupService {
     
     private final GroupRepository groupRepository;
     private final PropertyRepository propertyRepository;
+    private final RecordRepository recordRepository;
     
     public List<LightGroupDTO> getLightGroups() {
         return groupRepository.findAll()
@@ -57,6 +60,9 @@ public class GroupService {
         Group existing = groupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found with ID: " + id));
         GroupMapper.updateFromDTO(existing, dto);
+        if (!existing.getName().equals(dto.getName())) {
+            recordRepository.updateParentNameByParentId(existing.getId(), dto.getName());
+        }
         return groupRepository.save(existing);
     }
     

@@ -80,7 +80,7 @@ public class RecordService {
         if (property.getGroupId() == null) {
             return; // Property is not part of a group, nothing to sync
         }
-        
+
         Record groupRecord = recordRepository
                 .findByTypeAndParentIdAndMonthAndYear(Property.PropertyType.GROUPED, property.getGroupId(), propertyRecord.getMonth(), propertyRecord.getYear())
                 .orElseGet(() -> {
