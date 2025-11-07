@@ -10,12 +10,13 @@ import rent.tracker.backend.Exception.ResourceNotFoundException;
 import rent.tracker.backend.Model.Group;
 import rent.tracker.backend.Model.Property;
 import rent.tracker.backend.Mapper.GroupMapper;
+import rent.tracker.backend.Model.Record;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 import rent.tracker.backend.Repository.RecordRepository;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final PropertyRepository propertyRepository;
     private final RecordRepository recordRepository;
-    
+
     public List<LightGroupDTO> getLightGroups() {
         return groupRepository.findAll()
                 .stream()
@@ -60,8 +61,12 @@ public class GroupService {
         Group existing = groupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found with ID: " + id));
         GroupMapper.updateFromDTO(existing, dto);
-        if (!existing.getName().equals(dto.getName())) {
-            recordRepository.updateParentNameByParentId(existing.getId(), dto.getName());
+        if (!Objects.equals(existing.getName(), dto.getName())) {
+            List<Record> records = recordRepository.findAllByParentId(id);
+            if (!records.isEmpty()) {
+                records.forEach(record -> record.setParentName(dto.getName()));
+                recordRepository.saveAll(records);
+            }
         }
         return groupRepository.save(existing);
     }

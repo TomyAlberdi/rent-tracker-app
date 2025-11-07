@@ -6,9 +6,13 @@ import rent.tracker.backend.DTO.Property.CreatePropertyDTO;
 import rent.tracker.backend.Exception.ResourceNotFoundException;
 import rent.tracker.backend.Mapper.PropertyMapper;
 import rent.tracker.backend.Model.Property;
+import rent.tracker.backend.Model.Record;
 import rent.tracker.backend.Repository.GroupRepository;
 import rent.tracker.backend.Repository.PropertyRepository;
 import rent.tracker.backend.Repository.RecordRepository;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -43,8 +47,12 @@ public class PropertyService {
         if (dto.getGroupId() != null && !groupRepository.existsById(dto.getGroupId())) {
             throw new ResourceNotFoundException("Group not found with ID: " + dto.getGroupId());
         }
-        if (!existing.getName().equals(dto.getName())) {
-            recordRepository.updateParentNameByParentId(existing.getId(), dto.getName());
+        if (!Objects.equals(existing.getName(), dto.getName())) {
+            List<Record> records = recordRepository.findAllByParentId(id);
+            if (!records.isEmpty()) {
+                records.forEach(record -> record.setParentName(dto.getName()));
+                recordRepository.saveAll(records);
+            }
         }
         PropertyMapper.updateFromDTO(existing, dto);
         return propertyRepository.save(existing);
