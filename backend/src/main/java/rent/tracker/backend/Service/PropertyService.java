@@ -63,6 +63,7 @@ public class PropertyService {
             throw new ResourceNotFoundException("Property not found with ID: " + id);
         }
         propertyRepository.deleteById(id);
+        recordRepository.deleteAllByParentId(id);
     }
 
 }

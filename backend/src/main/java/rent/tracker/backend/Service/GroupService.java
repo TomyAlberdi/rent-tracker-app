@@ -60,7 +60,6 @@ public class GroupService {
     public Group updateGroup(String id, CreateGroupDTO dto) {
         Group existing = groupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found with ID: " + id));
-        GroupMapper.updateFromDTO(existing, dto);
         if (!Objects.equals(existing.getName(), dto.getName())) {
             List<Record> records = recordRepository.findAllByParentId(id);
             if (!records.isEmpty()) {
@@ -68,6 +67,7 @@ public class GroupService {
                 recordRepository.saveAll(records);
             }
         }
+        GroupMapper.updateFromDTO(existing, dto);
         return groupRepository.save(existing);
     }
     
@@ -76,6 +76,7 @@ public class GroupService {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found with ID: " + id));
         groupRepository.delete(group);
+        recordRepository.deleteAllByParentId(id);
     }
     
 }

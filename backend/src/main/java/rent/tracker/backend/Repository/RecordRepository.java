@@ -15,4 +15,5 @@ public interface RecordRepository extends MongoRepository<Record, String> {
     List<Record> findAllByYearOrderByMonth(Integer year);
     List<Record> findAllByYearAndTypeOrderByParentName(Integer year, Property.PropertyType type);
     List<Record> findAllByParentId(String parentId);
+    void deleteAllByParentId(String parentId);
 }
