@@ -38,18 +38,22 @@ public class RecordService {
     public Record save(CreateRecordDTO recordDTO) {
         String parentName = checkParentExists(recordDTO.getType(), recordDTO.getParentId());
         Record savedRecord;
+        Record record = recordRepository.findById(recordDTO.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Record with id " + recordDTO.getId() + " not found"));
         if (recordDTO.getId() == null) {
             Record newRecord = RecordMapper.toEntity(recordDTO, parentName);
             calculateAmounts(newRecord);
             savedRecord = recordRepository.save(newRecord);
         } else {
-            Record record = recordRepository.findById(recordDTO.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Record with id " + recordDTO.getId() + " not found"));
             RecordMapper.updateFromDTO(record, recordDTO, parentName);
             calculateAmounts(record);
             savedRecord = recordRepository.save(record);
         }
         syncPropertyRecordToGroupRecord(savedRecord);
+        if (recordDTO.getTransactions().isEmpty()) {
+            recordRepository.delete(record);
+            return null;
+        }
         return savedRecord;
     }
     
@@ -80,7 +84,6 @@ public class RecordService {
         if (property.getGroupId() == null) {
             return; // Property is not part of a group, nothing to sync
         }
-
         Record groupRecord = recordRepository
                 .findByTypeAndParentIdAndMonthAndYear(Property.PropertyType.GROUPED, property.getGroupId(), propertyRecord.getMonth(), propertyRecord.getYear())
                 .orElseGet(() -> {
